@@ -47,15 +47,15 @@ public class Manager {
         statusChecker(newSubtask);                     // проверить статусы всех субтасков, входящих в Эпик,
         // скорректировать статус эпика, если необходимо
     }
-    private void statusChecker(Subtask newSubtask) {   // метод проверки и пересчёта статусов для Эпиков
+    public void statusChecker(Subtask newSubtask) {   // метод проверки и пересчёта статусов для Эпиков
         int counter = 0;
         int counterNEW = 0;
         int counterInProgress = 0;
         int counterDone = 0;
         for (Subtask mySubtask : getEpicById(newSubtask.getIdOfMyEpic()).mySubtasks) {  // перебор подзадач эпика
-            if (mySubtask.status.equals("NEW")) {
+            if (mySubtask.getMyStatus().equals("NEW")) {
                 counterNEW += 1;
-            } else if (mySubtask.status.equals("IN_PROGRESS")) {
+            } else if (mySubtask.getMyStatus().equals("IN_PROGRESS")) {
                 counterInProgress += 1;
             } else {
                 counterDone += 1;
