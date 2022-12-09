@@ -1,7 +1,6 @@
 package TaskTracker;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
 public class Manager {
     String[] status = {"NEW", "IN_PROGRESS", "DONE"};   // список статусов работы над задачей
@@ -15,24 +14,62 @@ public class Manager {
     //
 
 
+    // МЕТОДЫ ДЛЯ TASK
     public void makeNewTask(String nameOfTask, String descriptionOfTask, String status) {   // новая задача
         int uniqueId = makeID();
         Task task = new Task(uniqueId, nameOfTask, descriptionOfTask, status);
         taskTasks.put(uniqueId, task);           // сохранили объект, содержащий полное описание задачи
     }
-    public void makeNewEpic(String nameOfTask, String descriptionOfTask, String status) {   // новая Эпик задача
+    public Task getTaskById(int idForSearch) {    //Получение задачи Task по идентификатору.
+        if (taskTasks.containsKey(idForSearch)) {
+            return taskTasks.get(idForSearch);
+        } else {
+            return null;
+        }
+    }
+    public void updateTask(int idForUpdate, Task newTask) {   //Обновление задач Task
+        if (taskTasks.containsKey(idForUpdate)) {
+            taskTasks.put(idForUpdate, newTask);
+        }
+    }
+    public void clearTask() {
+        if (!taskTasks.isEmpty()) {
+            taskTasks.clear();
+        }
+    }
+
+
+    /*public void makeNewEpic(String nameOfTask, String descriptionOfTask, String status) {   // новая Эпик задача
         int uniqueEpicId = makeID();
         //makeNewSubtask(String nameOfTask, String descriptionOfTask, String status);
         Epic epic = new Epic(uniqueEpicId, nameOfTask, descriptionOfTask, status);
         epicTasks.put(uniqueEpicId, epic);           // сохранили объект, содержащий полное описание Epic задачи
-    }
+    }*/
     public void makeNewSubtask(String nameOfTask, String descriptionOfTask, String status) {   // новая Эпик задача
         int uniqueSubtaskId = makeID();
         Subtask subtask = new Subtask(uniqueSubtaskId, nameOfTask, descriptionOfTask, status);
-        subtaskTasks.put(uniqueSubtaskId, subtask);           // сохранили объект, содержащий полное описание subtask задачи
+        subtaskTasks.put(uniqueSubtaskId, subtask);       // сохранили объект, содержащий полное описание subtask задачи
     }
-    // далее МЕТОДЫ ДЛЯ ВСЕХ ЗАДАЧ
-    public ArrayList<Object> getListAllTasks() { //Получение списка всех задач
+
+
+    public Epic getEpicById(int idForSearch) {     //Получение задачи Epic по идентификатору.
+        if (epicTasks.containsKey(idForSearch)) {
+            return epicTasks.get(idForSearch);
+        } else {
+            return null;
+        }
+    }
+    public Subtask getSubTaskById(int idForSearch) {       //Получение задачи subTask по идентификатору.
+        if (subtaskTasks.containsKey(idForSearch)) {
+            return subtaskTasks.get(idForSearch);
+        } else {
+            return null;
+        }
+    }
+
+
+    // МЕТОДЫ ДЛЯ ЗАДАЧ ВСЕХ типов сразу
+    public ArrayList<Object> getListAllTasks() {                      //Получение списка всех задач
         ArrayList<Object> taskEpicSubtaskList = new ArrayList<Object>();
         for (Integer id : taskTasks.keySet()) {
             taskEpicSubtaskList.add(taskTasks.get(id));
@@ -63,16 +100,7 @@ public class Manager {
             subtaskTasks.remove(idForDell);
         }
     }
-    public Object getTaskById(int idForSearch) {    //Получение задачи по идентификатору.
-        if (taskTasks.containsKey(idForSearch)) {
-            return taskTasks.get(idForSearch);
-        } else if (epicTasks.containsKey(idForSearch)) {
-            return epicTasks.get(idForSearch);
-        } else if (subtaskTasks.containsKey(idForSearch)) {
-           return subtaskTasks.get(idForSearch);
-        }
-        return null;
-    }
+
     Integer makeID() {  // метод который генерирует id для всех классов, при обращении к нему
         int id = lastID + 1;
         lastID = id;
