@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Manager {
-    Integer lastID; // здесь хранитися последний сгенерированный id всех задач
+    int lastID; // здесь хранитися последний сгенерированный id всех задач
     private HashMap<Integer, Epic> epicTasks = new HashMap<>(); // для хранения всех TaskTracker.Epic задач
     private HashMap<Integer, Subtask> subtaskTasks = new HashMap<>(); // для хранения всех TaskTracker.Subtask задач
     private HashMap<Integer, Task> taskTasks = new HashMap<>(); // для хранения всех TaskTracker.Task задач
@@ -156,7 +156,7 @@ public class Manager {
         }
     }
 
-    Integer makeID() {              // генератор id для задач всех типов
+    int makeID() {              // генератор id для задач всех типов
         int id = lastID + 1;
         lastID = id;
         return id;

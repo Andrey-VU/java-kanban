@@ -2,15 +2,13 @@ package TaskTracker;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-
     ArrayList<Subtask> mySubtasks = new ArrayList<>();
     private Integer myEpicId;
     private String myEpicStatus;
 
-    public Epic(String nameOfTask, String descriptionOfTask, Integer id, String status,
-                ArrayList<Subtask> subtasks) {
+    public Epic(String nameOfTask, String descriptionOfTask, Integer id, String status) {
         super(nameOfTask, descriptionOfTask, id, status);
-        this.mySubtasks = subtasks;
+        this.myEpicStatus = status;
         this.myEpicId = id;
         this.myEpicStatus = status;
     }
