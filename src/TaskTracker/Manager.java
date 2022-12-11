@@ -29,8 +29,8 @@ public class Manager {
     }
     public ArrayList<Subtask> getListSubtasksOfEpic(Epic epic) {   //Получение списка всех подзадач определённого эпика
         ArrayList<Subtask> subtasksList = new ArrayList<Subtask>();
-        if (!epic.mySubtasks.isEmpty()) {
-            for (Subtask mySubtask : epic.mySubtasks) {
+        if (!epic.getMySubtasks().isEmpty()) {
+            for (Subtask mySubtask : epic.getMySubtasks()) {
                 subtasksList.add(mySubtask);
             }
             return subtasksList;
@@ -38,37 +38,31 @@ public class Manager {
             return null;
         }
     }
+
+    public void dellAllEpic() {    //Удаление всех задач и подзадач Эпика
+        if (!epicTasks.isEmpty()) {
+            for (Integer integer : epicTasks.keySet()) {
+                for (Subtask mySubtask : epicTasks.get(integer).getMySubtasks()) {
+                    dellTaskById(mySubtask.getIdOfSubtask());
+                }
+            }
+            epicTasks.clear();
+        }
+    }
+
+
     // МЕТОДЫ ДЛЯ SUBTASKS-------------------------------------------------------------------------------------------
     public void makeNewSubtask(Subtask subtask) {
         Subtask newSubtask = subtask;              // создали подзадачу. уже здесь есть статус и есть инфо об Эпике
         int uniqSubtaskId = makeID();                  // присвоили подзадаче уникальный id
         newSubtask.setSubtaskId(uniqSubtaskId);        // присвоили подзадаче уникальный id
+        getEpicById(newSubtask.getIdOfMyEpic()).setMySubtasksId(uniqSubtaskId);   // отправить Id подзадачи в эпика
+        getEpicById(newSubtask.getIdOfMyEpic()).setMySubtask(newSubtask);         // отправить подзадачу в эпик
+        statusChecker(newSubtask);                      // проверить статусы всех субтасков, входящих в Эпик,
+                                                        // скорректировать статус эпика, если необходимо
         subtaskTasks.put(uniqSubtaskId, newSubtask);   // записали  подзадачу в хранилище
-        statusChecker(newSubtask);                     // проверить статусы всех субтасков, входящих в Эпик,
-        // скорректировать статус эпика, если необходимо
     }
-    public void statusChecker(Subtask newSubtask) {   // метод проверки и пересчёта статусов для Эпиков
-        int counter = 0;
-        int counterNEW = 0;
-        int counterInProgress = 0;
-        int counterDone = 0;
-        for (Subtask mySubtask : getEpicById(newSubtask.getIdOfMyEpic()).mySubtasks) {  // перебор подзадач эпика
-            if (mySubtask.getMyStatus().equals("NEW")) {
-                counterNEW += 1;
-            } else if (mySubtask.getMyStatus().equals("IN_PROGRESS")) {
-                counterInProgress += 1;
-            } else {
-                counterDone += 1;
-            }
-        }
-        if (counterNEW == counter) {
-            getEpicById(newSubtask.getIdOfMyEpic()).setMyStatus("NEW");
-        } else if (counter == counterDone) {
-            getEpicById(newSubtask.getIdOfMyEpic()).setMyStatus("DONE");
-        } else {
-            getEpicById(newSubtask.getIdOfMyEpic()).setMyStatus("IN_PROGRESS");
-        }
-    }
+
     public Subtask getSubTaskById(int idForSearch) {       //Получение задачи subTask по идентификатору.
         if (subtaskTasks.containsKey(idForSearch)) {
             return subtaskTasks.get(idForSearch);
@@ -78,10 +72,40 @@ public class Manager {
     }
     public void updateSubtask(int idForUpdate, Subtask subtask) {
         if (subtaskTasks.containsKey(idForUpdate)) {
+            dellTaskById(subtask.getIdOfSubtask());   // очищаем список подзадач эпика от старого эпика
+            getEpicById(subtask.getIdOfMyEpic()).setMySubtasksId(subtask.getIdOfSubtask()); ;   // отправить Id подзадачи в эпика
+            getEpicById(subtask.getIdOfMyEpic()).setMySubtask(subtask);         // отправить подзадачу в эпик
             subtaskTasks.put(idForUpdate, subtask);
             statusChecker(subtask);
         }
     }
+
+    public void statusChecker(Subtask newSubtask) {   // метод проверки и пересчёта статусов для Эпиков
+        int counter = 0;
+        int counterNEW = 0;
+        int counterINPROGRESS = 0;
+        int counterDone = 0;
+
+        for (Subtask mySubtask : getEpicById(newSubtask.getIdOfMyEpic()).getMySubtasks()) {
+            if (mySubtask.getMyStatus().equals("NEW"))    {
+                counterNEW += 1;
+            } else if (mySubtask.getMyStatus().equals("IN_PROGRESS")) {
+                counterINPROGRESS += 1;
+            } else if (mySubtask.getMyStatus().equals("DONE")) {
+                counterDone += 1;
+            }
+            counter += 1;
+        }
+
+        if (counterNEW == counter) {
+            getEpicById(newSubtask.getIdOfMyEpic()).setMyStatus("NEW");
+        } else if (counterDone == counter) {
+            getEpicById(newSubtask.getIdOfMyEpic()).setMyStatus("DONE");
+        } else {
+            getEpicById(newSubtask.getIdOfMyEpic()).setMyStatus("IN_PROGRESS");
+        }
+    }
+
     // МЕТОДЫ ДЛЯ TASK   =============================================================================================
     public void makeNewTask(Task task) {   // новая задача
         Task newTask = task;
@@ -96,6 +120,7 @@ public class Manager {
             return null;
         }
     }
+
     public void updateTask(int idForUpdate, Task newTask) {   //Обновление задач Task
         if (taskTasks.containsKey(idForUpdate)) {
             taskTasks.put(idForUpdate, newTask);
@@ -150,6 +175,9 @@ public class Manager {
         if (taskTasks.containsKey(idForDell)) {
             taskTasks.remove(idForDell);
         } else if (epicTasks.containsKey(idForDell)) {
+            for (Subtask mySubtask : epicTasks.get(idForDell).getMySubtasks()) {
+                dellTaskById(mySubtask.getIdOfSubtask());
+            }
             epicTasks.remove(idForDell);
         } else if (subtaskTasks.containsKey(idForDell)) {
             subtaskTasks.remove(idForDell);
@@ -162,3 +190,22 @@ public class Manager {
         return id;
     }
 }
+
+
+/*
+//for
+        //(Subtask mySubtask : getEpicById(newSubtask.getIdOfMyEpic()).getMySubtasks()) {  // перебор подзадач эпика
+            counter +=1;
+          //  if (mySubtask.getMyStatus().equals("NEW")) {
+                counterNEW += 1;
+            } else if (mySubtask.getMyStatus().equals("DONE")) {
+                counterDone += 1;
+            }
+        }
+
+        (newSubtask.getMyStatus().equals("IN_PROGRESS")) {
+                counterINPROGRESS += 1;
+            } else if (newSubtask.getMyStatus().equals("NEW")) {
+                counterNEW += 1;
+
+ */

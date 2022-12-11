@@ -2,18 +2,18 @@ package TaskTracker;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    ArrayList<Subtask> mySubtasks = new ArrayList<>();
-    private Integer myEpicId;
+    private ArrayList<Subtask> mySubtasks = new ArrayList<>();
+    private ArrayList<Integer> mySubtasksId = new ArrayList<>();
+    private int myEpicId;
     private String myEpicStatus;
 
     public Epic(String nameOfTask, String descriptionOfTask, Integer id, String status) {
         super(nameOfTask, descriptionOfTask, id, status);
-        this.myEpicStatus = status;
         this.myEpicId = id;
         this.myEpicStatus = status;
     }
 
-    public Integer getMyEpicID() {
+    public int getMyEpicID() {
         return myEpicId;
     }
     public void setMyEpicId(int uniqueEpicId) {
@@ -22,7 +22,23 @@ public class Epic extends Task {
     public void setMyStatus(String status) {
         myEpicStatus = status;
     }
-    public String getStatusOfMySubtask(int idOfSubtask){
+    /*public String getStatusOfMySubtask(int idOfSubtask){
         return mySubtasks.get(idOfSubtask).getMyStatus();
+    }*/
+    public String getMyEpicStatus() {
+        return myEpicStatus;
     }
+    public void setMySubtasksId(int idOfSubTask) {
+        mySubtasksId.add(idOfSubTask);
     }
+    /*public ArrayList<Integer> getMySubtasksId() {
+        return mySubtasksId;
+    }*/
+    public void setMySubtask(Subtask newSubtask) {
+        mySubtasks.add(newSubtask);
+    }
+
+    public ArrayList<Subtask> getMySubtasks() {
+        return mySubtasks;
+    }
+}
