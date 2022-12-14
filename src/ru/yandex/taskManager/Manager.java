@@ -1,18 +1,17 @@
-package TaskTracker;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Manager {
-    int lastID; // здесь хранитися последний сгенерированный id всех задач
-    private HashMap<Integer, Epic> epicTasks = new HashMap<>(); // для хранения всех TaskTracker.Epic задач
-    private HashMap<Integer, Subtask> subtaskTasks = new HashMap<>(); // для хранения всех TaskTracker.Subtask задач
-    private HashMap<Integer, Task> taskTasks = new HashMap<>(); // для хранения всех TaskTracker.Task задач
+    private int lastID; // здесь хранитися последний сгенерированный id всех задач
+    private HashMap<Integer, Epic> epicTasks = new HashMap<>(); // для хранения всех Epic задач
+    private HashMap<Integer, Subtask> subtaskTasks = new HashMap<>(); // для хранения всех Subtask задач
+    private HashMap<Integer, Task> taskTasks = new HashMap<>(); // для хранения всех Task задач
 
     // МЕТОДЫ ДЛЯ EPIC ==============================================================================================
     public void makeNewEpic(Epic epic) {              // новая Эпик задача
         Epic newEpic = epic;
         int uniqueEpicId = makeID();
-        newEpic.setMyEpicId(uniqueEpicId);
+        newEpic.setId(uniqueEpicId);
         epicTasks.put(uniqueEpicId, newEpic);         // сохранили объект, содержащий полное описание Epic задачи
     }
     public Epic getEpicById(int idForSearch) {        //Получение задачи Epic по идентификатору.
@@ -43,7 +42,7 @@ public class Manager {
         if (!epicTasks.isEmpty()) {
             for (Integer integer : epicTasks.keySet()) {
                 for (Subtask mySubtask : epicTasks.get(integer).getMySubtasks()) {
-                    dellTaskById(mySubtask.getIdOfSubtask());
+                    dellTaskById(mySubtask.getId());
                 }
             }
             epicTasks.clear();
@@ -55,9 +54,10 @@ public class Manager {
     public void makeNewSubtask(Subtask subtask) {
         Subtask newSubtask = subtask;              // создали подзадачу. уже здесь есть статус и есть инфо об Эпике
         int uniqSubtaskId = makeID();                  // присвоили подзадаче уникальный id
-        newSubtask.setSubtaskId(uniqSubtaskId);        // присвоили подзадаче уникальный id
-        getEpicById(newSubtask.getIdOfMyEpic()).setMySubtasksId(uniqSubtaskId);   // отправить Id подзадачи в эпика
-        getEpicById(newSubtask.getIdOfMyEpic()).setMySubtask(newSubtask);         // отправить подзадачу в эпик
+        newSubtask.setId(uniqSubtaskId);               // присвоили подзадаче уникальный id
+        //newSubtask.setEpicId(newSubtask.getEpicID());
+        getEpicById(newSubtask.getEpicID()).setMySubtask(newSubtask);         // отправить подзадачу в эпик
+
         statusChecker(newSubtask);                      // проверить статусы всех субтасков, входящих в Эпик,
                                                         // скорректировать статус эпика, если необходимо
         subtaskTasks.put(uniqSubtaskId, newSubtask);   // записали  подзадачу в хранилище
@@ -72,9 +72,8 @@ public class Manager {
     }
     public void updateSubtask(int idForUpdate, Subtask subtask) {
         if (subtaskTasks.containsKey(idForUpdate)) {
-            dellTaskById(subtask.getIdOfSubtask());   // очищаем список подзадач эпика от старого эпика
-            getEpicById(subtask.getIdOfMyEpic()).setMySubtasksId(subtask.getIdOfSubtask()); ;   // отправить Id подзадачи в эпика
-            getEpicById(subtask.getIdOfMyEpic()).setMySubtask(subtask);         // отправить подзадачу в эпик
+            dellTaskById(subtask.getId());   // очищаем список подзадач эпика от старого эпика
+            getEpicById(subtask.getEpicID()).setMySubtask(subtask);         // отправить подзадачу в эпик
             subtaskTasks.put(idForUpdate, subtask);
             statusChecker(subtask);
         }
@@ -86,23 +85,23 @@ public class Manager {
         int counterINPROGRESS = 0;
         int counterDone = 0;
 
-        for (Subtask mySubtask : getEpicById(newSubtask.getIdOfMyEpic()).getMySubtasks()) {
-            if (mySubtask.getMyStatus().equals("NEW"))    {
+        for (Subtask mySubtask : getEpicById(newSubtask.getEpicID()).getMySubtasks()) {
+            if (mySubtask.getStatus().equals("NEW"))    {
                 counterNEW += 1;
-            } else if (mySubtask.getMyStatus().equals("IN_PROGRESS")) {
+            } else if (mySubtask.getStatus().equals("IN_PROGRESS")) {
                 counterINPROGRESS += 1;
-            } else if (mySubtask.getMyStatus().equals("DONE")) {
+            } else if (mySubtask.getStatus().equals("DONE")) {
                 counterDone += 1;
             }
             counter += 1;
         }
 
         if (counterNEW == counter) {
-            getEpicById(newSubtask.getIdOfMyEpic()).setMyStatus("NEW");
+            getEpicById(newSubtask.getEpicID()).setStatus("NEW");
         } else if (counterDone == counter) {
-            getEpicById(newSubtask.getIdOfMyEpic()).setMyStatus("DONE");
+            getEpicById(newSubtask.getEpicID()).setStatus("DONE");
         } else {
-            getEpicById(newSubtask.getIdOfMyEpic()).setMyStatus("IN_PROGRESS");
+            getEpicById(newSubtask.getEpicID()).setStatus("IN_PROGRESS");
         }
     }
 
@@ -110,7 +109,7 @@ public class Manager {
     public void makeNewTask(Task task) {   // новая задача
         Task newTask = task;
         int uniqueId = makeID();
-        newTask.setTaskId(uniqueId);
+        newTask.setId(uniqueId);
         taskTasks.put(uniqueId, newTask);   // сохранили объект, содержащий полное описание задачи в хранилище
     }
     public Task getTaskById(int idForSearch) {                   //Получение задачи Task по идентификатору.
@@ -176,7 +175,7 @@ public class Manager {
             taskTasks.remove(idForDell);
         } else if (epicTasks.containsKey(idForDell)) {
             for (Subtask mySubtask : epicTasks.get(idForDell).getMySubtasks()) {
-                dellTaskById(mySubtask.getIdOfSubtask());
+                dellTaskById(mySubtask.getId());
             }
             epicTasks.remove(idForDell);
         } else if (subtaskTasks.containsKey(idForDell)) {
@@ -191,21 +190,3 @@ public class Manager {
     }
 }
 
-
-/*
-//for
-        //(Subtask mySubtask : getEpicById(newSubtask.getIdOfMyEpic()).getMySubtasks()) {  // перебор подзадач эпика
-            counter +=1;
-          //  if (mySubtask.getMyStatus().equals("NEW")) {
-                counterNEW += 1;
-            } else if (mySubtask.getMyStatus().equals("DONE")) {
-                counterDone += 1;
-            }
-        }
-
-        (newSubtask.getMyStatus().equals("IN_PROGRESS")) {
-                counterINPROGRESS += 1;
-            } else if (newSubtask.getMyStatus().equals("NEW")) {
-                counterNEW += 1;
-
- */

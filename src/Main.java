@@ -1,4 +1,8 @@
-package TaskTracker;
+import ru.yandex.taskManager.Manager;
+import ru.yandex.tasks.Epic;
+import ru.yandex.tasks.Subtask;
+import ru.yandex.tasks.Task;
+
 public class Main {
     public static void main(String[] args) {
         Manager manager = new Manager();
@@ -26,14 +30,14 @@ public class Main {
         //  ПОДЗДАЧИ ДЛЯ ПЕРВОГО ЭПИКА
         Subtask subtaskTest1 = new Subtask("Получить рабочую версию программы",
                 "Написать код для тестирования. Выполнить отладку", 0, "NEW",
-                epicTest1.getMyEpicID());
+                epicTest1.getId());
         // ПОДЗДААЧИ ДЛЯ ВТОРОГО ЭПИКА
         Subtask subtaskTest2 = new Subtask("Предобработка ног",
                 "Перфорировать, добавить перец, паприку, чеснок, соль", 0, "NEW",
-                epicTest2.getMyEpicID());
+                epicTest2.getId());
          Subtask subtaskTest3 = new Subtask("Запекание",
                 "40 минут на 200 градусов в духовке", 0, "NEW",
-                epicTest2.getMyEpicID());
+                epicTest2.getId());
         // ОТПРАВЛЯЕМ ПОДЗАДАЧИ В ТРЕКЕР
         manager.makeNewSubtask(subtaskTest1);
         manager.makeNewSubtask(subtaskTest2);
@@ -48,28 +52,28 @@ public class Main {
         // Меняем статусы созданных объектов, распечатываем.
         // Простые задачи
         Task updateForTaskTest1 = new Task("Пробежка", "не менее 30 минут и не менее 5 км",
-                taskTest1.getIdOfTask(), "DONE");
+                taskTest1.getId(), "DONE");
         Task updateForTaskTest2 = new Task("Гитарный конкурс",
                 "Отвезти сына на гитарный конкурс к 15.00",
-                taskTest2.getIdOfTask(), "IN_PROGRESS");
-        manager.updateTask( taskTest1.getIdOfTask(), updateForTaskTest1);
-        manager.updateTask( taskTest2.getIdOfTask(), updateForTaskTest2);
+                taskTest2.getId(), "IN_PROGRESS");
+        manager.updateTask( taskTest1.getId(), updateForTaskTest1);
+        manager.updateTask( taskTest2.getId(), updateForTaskTest2);
 
         // Подзадачи Эпиков
         // Эпик 1
         Subtask updateForSubtaskTest1 = new Subtask("Получить рабочую версию программы",
-                "Написать код для тестирования. Выполнить отладку", subtaskTest1.getIdOfSubtask(),
-                "IN_PROGRESS", epicTest1.getMyEpicID());
+                "Написать код для тестирования. Выполнить отладку", subtaskTest1.getId(),
+                "IN_PROGRESS", epicTest1.getId());
         Subtask updateForSubtaskTest2 = new Subtask("Предобработка ног",
-                "Перфорировать, добавить перец, паприку, чеснок, соль", subtaskTest2.getIdOfSubtask(),
-                "DONE", epicTest2.getMyEpicID());
+                "Перфорировать, добавить перец, паприку, чеснок, соль", subtaskTest2.getId(),
+                "DONE", epicTest2.getId());
         Subtask updateForSubtaskTest3 = new Subtask("Запекание",
-                "40 минут на 200 градусов в духовке", subtaskTest3.getIdOfSubtask(),
-                "DONE", epicTest2.getMyEpicID());
+                "40 минут на 200 градусов в духовке", subtaskTest3.getId(),
+                "DONE", epicTest2.getId());
 
-        manager.updateSubtask(subtaskTest1.getIdOfSubtask(), updateForSubtaskTest1);
-        manager.updateSubtask(subtaskTest2.getIdOfSubtask(), updateForSubtaskTest2);
-        manager.updateSubtask(subtaskTest3.getIdOfSubtask(), updateForSubtaskTest3);
+        manager.updateSubtask(subtaskTest1.getId(), updateForSubtaskTest1);
+        manager.updateSubtask(subtaskTest2.getId(), updateForSubtaskTest2);
+        manager.updateSubtask(subtaskTest3.getId(), updateForSubtaskTest3);
 
         // Проверяем, что статус задачи и подзадачи сохранился, а статус эпика рассчитался по статусам подзадач.
         System.out.println(" =====================  ВЫХЛОП ПОСЛЕ ИЗМЕНЕНИЯ СТАТУСОВ ==============================");
@@ -77,10 +81,10 @@ public class Main {
                 subtaskTest2, subtaskTest3, taskTest1);
 
         // Удалить одну из задач и один из эпиков.
-        manager.dellTaskById(taskTest1.getIdOfTask());  // Удаляем Task задачу
-        manager.dellTaskById(epicTest2.getMyEpicID());  // Удаляем Epic 2
+        manager.dellTaskById(taskTest1.getId());  // Удаляем ru.yandex.tasks.Task задачу
+        manager.dellTaskById(epicTest2.getId());  // Удаляем ru.yandex.tasks.Epic 2
         System.out.println("После удаления 1ой простой задачи и одного Эпика:");
-        System.out.println(manager.getListAllTasks());  // проверяем удалось ли удалить Task задачу
+        System.out.println(manager.getListAllTasks());  // проверяем удалось ли удалить ru.yandex.tasks.Task задачу
 
         // Удалить все оставшиеся эпики и их сабтески
         manager.dellAllEpic();
@@ -90,24 +94,24 @@ public class Main {
     public static void printIdAndStatus(Manager manager, Task taskTest2, Epic epicTest1, Subtask subtaskTest1, Epic epicTest2,
                                         Subtask subtaskTest2, Subtask subtaskTest3, Task taskTest1) {
         System.out.println(" ========= ПРОСТЫЕ ЗАДАЧИ ======================");
-        System.out.println("статус taskTest1 = " + manager.getTaskById(taskTest1.getIdOfTask()).getStatus());
-        System.out.println("id taskTest1 = " + manager.getTaskById(taskTest1.getIdOfTask()).getIdOfTask());
-        System.out.println("статус taskTest2 = " + manager.getTaskById(taskTest2.getIdOfTask()).getStatus());
-        System.out.println("id taskTest2 = " + manager.getTaskById(taskTest2.getIdOfTask()).getIdOfTask());
+        System.out.println("статус taskTest1 = " + manager.getTaskById(taskTest1.getId()).getStatus());
+        System.out.println("id taskTest1 = " + manager.getTaskById(taskTest1.getId()).getId());
+        System.out.println("статус taskTest2 = " + manager.getTaskById(taskTest2.getId()).getStatus());
+        System.out.println("id taskTest2 = " + manager.getTaskById(taskTest2.getId()).getId());
         System.out.println(" =========  ЭПИК № 1 И ЕГО ПОДЗАДАЧи ======================");
-        System.out.println("id epicTest1 = " + manager.getEpicById(epicTest1.getMyEpicID()).getMyEpicID());
-        System.out.println("статус epicTest1 = " + manager.getEpicById(epicTest1.getMyEpicID()).getMyEpicStatus());
-        System.out.println("id subtaskTest1 = " + manager.getSubTaskById(subtaskTest1.getIdOfSubtask()).getIdOfSubtask());
-        System.out.println("статус subtaskTest1 = " + manager.getSubTaskById(subtaskTest1.getIdOfSubtask()).getMyStatus());
+        System.out.println("id epicTest1 = " + manager.getEpicById(epicTest1.getId()).getId());
+        System.out.println("статус epicTest1 = " + manager.getEpicById(epicTest1.getId()).getStatus());
+        System.out.println("id subtaskTest1 = " + manager.getSubTaskById(subtaskTest1.getId()).getId());
+        System.out.println("статус subtaskTest1 = " + manager.getSubTaskById(subtaskTest1.getId()).getStatus());
         System.out.println(" =========  ЭПИК № 2 И ЕГО ПОДЗАДАЧи ======================");
-        System.out.println("id epicTest2 = " + manager.getEpicById(epicTest2.getMyEpicID()).getMyEpicID());
-        System.out.println("статус epicTest2 = " + manager.getEpicById(epicTest2.getMyEpicID()).getMyEpicStatus());
+        System.out.println("id epicTest2 = " + manager.getEpicById(epicTest2.getId()).getId());
+        System.out.println("статус epicTest2 = " + manager.getEpicById(epicTest2.getId()).getStatus());
         System.out.println(" ПОДЗАДАЧА 1 ВТОРОГО ЭПИКА ======================");
-        System.out.println("id subtaskTest2 = " + manager.getSubTaskById(subtaskTest2.getIdOfSubtask()).getIdOfSubtask());
-        System.out.println("статус subtaskTest2 = " + manager.getSubTaskById(subtaskTest2.getIdOfSubtask()).getMyStatus());
+        System.out.println("id subtaskTest2 = " + manager.getSubTaskById(subtaskTest2.getId()).getId());
+        System.out.println("статус subtaskTest2 = " + manager.getSubTaskById(subtaskTest2.getId()).getStatus());
         System.out.println(" ПОДЗАДАЧА 2 ВТОРОГО ЭПИКА ======================");
-        System.out.println("id subtaskTest3 = " + manager.getSubTaskById(subtaskTest3.getIdOfSubtask()).getIdOfSubtask());
-        System.out.println("статус subtaskTest3 = " + manager.getSubTaskById(subtaskTest3.getIdOfSubtask()).getMyStatus());
+        System.out.println("id subtaskTest3 = " + manager.getSubTaskById(subtaskTest3.getId()).getId());
+        System.out.println("статус subtaskTest3 = " + manager.getSubTaskById(subtaskTest3.getId()).getStatus());
     }
 }
 
