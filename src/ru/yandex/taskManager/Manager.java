@@ -1,20 +1,24 @@
+package ru.yandex.taskManager;
+import ru.yandex.tasks.Epic;
+import ru.yandex.tasks.Subtask;
+import ru.yandex.tasks.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Manager {
     private int lastID; // здесь хранитися последний сгенерированный id всех задач
-    private HashMap<Integer, Epic> epicTasks = new HashMap<>(); // для хранения всех Epic задач
-    private HashMap<Integer, Subtask> subtaskTasks = new HashMap<>(); // для хранения всех Subtask задач
-    private HashMap<Integer, Task> taskTasks = new HashMap<>(); // для хранения всех Task задач
+    private HashMap<Integer, Epic> epicTasks = new HashMap<>(); // для хранения всех ru.yandex.tasks.Epic задач
+    private HashMap<Integer, Subtask> subtaskTasks = new HashMap<>(); // для хранения всех ru.yandex.tasks.Subtask задач
+    private HashMap<Integer, Task> taskTasks = new HashMap<>(); // для хранения всех ru.yandex.tasks.Task задач
 
     // МЕТОДЫ ДЛЯ EPIC ==============================================================================================
     public void makeNewEpic(Epic epic) {              // новая Эпик задача
         Epic newEpic = epic;
         int uniqueEpicId = makeID();
         newEpic.setId(uniqueEpicId);
-        epicTasks.put(uniqueEpicId, newEpic);         // сохранили объект, содержащий полное описание Epic задачи
+        epicTasks.put(uniqueEpicId, newEpic);         // сохранили объект, содержащий полное описание ru.yandex.tasks.Epic задачи
     }
-    public Epic getEpicById(int idForSearch) {        //Получение задачи Epic по идентификатору.
+    public Epic getEpicById(int idForSearch) {        //Получение задачи ru.yandex.tasks.Epic по идентификатору.
         if (epicTasks.containsKey(idForSearch)) {
             return epicTasks.get(idForSearch);
         } else {
@@ -55,11 +59,9 @@ public class Manager {
         Subtask newSubtask = subtask;              // создали подзадачу. уже здесь есть статус и есть инфо об Эпике
         int uniqSubtaskId = makeID();                  // присвоили подзадаче уникальный id
         newSubtask.setId(uniqSubtaskId);               // присвоили подзадаче уникальный id
-        //newSubtask.setEpicId(newSubtask.getEpicID());
         getEpicById(newSubtask.getEpicID()).setMySubtask(newSubtask);         // отправить подзадачу в эпик
-
         statusChecker(newSubtask);                      // проверить статусы всех субтасков, входящих в Эпик,
-                                                        // скорректировать статус эпика, если необходимо
+                                                       // скорректировать статус эпика, если необходимо
         subtaskTasks.put(uniqSubtaskId, newSubtask);   // записали  подзадачу в хранилище
     }
 
@@ -112,7 +114,7 @@ public class Manager {
         newTask.setId(uniqueId);
         taskTasks.put(uniqueId, newTask);   // сохранили объект, содержащий полное описание задачи в хранилище
     }
-    public Task getTaskById(int idForSearch) {                   //Получение задачи Task по идентификатору.
+    public Task getTaskById(int idForSearch) {                   //Получение задачи ru.yandex.tasks.Task по идентификатору.
         if (taskTasks.containsKey(idForSearch)) {
             return taskTasks.get(idForSearch);
         } else {
@@ -120,17 +122,17 @@ public class Manager {
         }
     }
 
-    public void updateTask(int idForUpdate, Task newTask) {   //Обновление задач Task
+    public void updateTask(int idForUpdate, Task newTask) {   //Обновление задач ru.yandex.tasks.Task
         if (taskTasks.containsKey(idForUpdate)) {
             taskTasks.put(idForUpdate, newTask);
         }
     }
-    public void clearTask() {                                        // Очистка списка всех задач Task
+    public void clearTask() {                                        // Очистка списка всех задач ru.yandex.tasks.Task
         if (!taskTasks.isEmpty()) {
             taskTasks.clear();
         }
     }
-    public ArrayList<Task> getListAllTasksFromTask() {                //Получение списка всех Task задач
+    public ArrayList<Task> getListAllTasksFromTask() {                //Получение списка всех ru.yandex.tasks.Task задач
         ArrayList<Task> tasksList = new ArrayList<Task>();
         if (!taskTasks.isEmpty()) {
             for (Integer id : taskTasks.keySet()) {

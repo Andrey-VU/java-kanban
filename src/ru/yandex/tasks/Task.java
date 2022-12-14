@@ -1,3 +1,5 @@
+package ru.yandex.tasks;
+
 public class Task {
     String name;                   // название
     String description;            // описание, в котором раскрываются детали

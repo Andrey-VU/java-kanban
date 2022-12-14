@@ -1,3 +1,7 @@
+package ru.yandex.tasks;
+
+import ru.yandex.tasks.Task;
+
 import java.util.ArrayList;
 
 public class Epic extends Task {
