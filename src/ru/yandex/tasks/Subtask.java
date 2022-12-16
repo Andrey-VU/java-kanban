@@ -1,5 +1,4 @@
 package ru.yandex.tasks;
-
 import ru.yandex.tasks.Task;
 
 public class Subtask extends Task {
