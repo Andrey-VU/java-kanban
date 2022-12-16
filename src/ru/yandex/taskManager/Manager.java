@@ -2,8 +2,10 @@ package ru.yandex.taskManager;
 import ru.yandex.tasks.Epic;
 import ru.yandex.tasks.Subtask;
 import ru.yandex.tasks.Task;
+import ru.yandex.tasks.Status;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 
 public class Manager {
     private int lastID; // здесь хранитися последний сгенерированный id всех задач
@@ -99,11 +101,11 @@ public class Manager {
         }
 
         if (counterNEW == counter) {
-            getEpicById(newSubtask.getEpicID()).setStatus("NEW");
+            getEpicById(newSubtask.getEpicID()).setStatus(Status.NEW);
         } else if (counterDone == counter) {
-            getEpicById(newSubtask.getEpicID()).setStatus("DONE");
+            getEpicById(newSubtask.getEpicID()).setStatus(Status.DONE);
         } else {
-            getEpicById(newSubtask.getEpicID()).setStatus("IN_PROGRESS");
+            getEpicById(newSubtask.getEpicID()).setStatus(Status.IN_PROGRESS);
         }
     }
 
@@ -186,9 +188,7 @@ public class Manager {
     }
 
     int makeID() {              // генератор id для задач всех типов
-        int id = lastID + 1;
-        lastID = id;
-        return id;
+        return ++lastID;
     }
 }
 

@@ -1,12 +1,12 @@
 package ru.yandex.tasks;
 
 public class Task {
-    String name;                   // название
-    String description;            // описание, в котором раскрываются детали
+    private String name;                   // название
+    private String description;            // описание, в котором раскрываются детали
     private int id;                      // Уникальный идентификационный номер
-    private String status;               // Статус прогресса работы над задачей
+    private Status status;               // Статус прогресса работы над задачей
 
-    public Task(String name, String description, Integer id, String status) {
+    public Task(String name, String description, Integer id, Status status) {
         this.name = name;
         this.description = description;
         this.id = id;
@@ -16,13 +16,13 @@ public class Task {
     public void setId(int id) {
         this.id = id;
     }
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
     public int getId() {
         return id;
     }
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 }

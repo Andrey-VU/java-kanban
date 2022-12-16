@@ -2,6 +2,7 @@ import ru.yandex.taskManager.Manager;
 import ru.yandex.tasks.Epic;
 import ru.yandex.tasks.Subtask;
 import ru.yandex.tasks.Task;
+import ru.yandex.tasks.Status;
 
 public class Main {
     public static void main(String[] args) {
@@ -10,17 +11,17 @@ public class Main {
 
         //Создайте 2 задачи, один эпик с 2 подзадачами, а другой эпик с 1 подзадачей.
         Task taskTest1 = new Task("Пробежка", "не менее 30 минут и не менее 5 км",
-                0, "NEW");
+                0, Status.NEW);
         Task taskTest2 = new Task("Гитарный конкурс",
                 "Отвезти сына на гитарный конкурс к 15.00",
-                0, "NEW");
+                0, Status.NEW);
 
         Epic epicTest1 = new Epic("Отправить на ревью ТЗ 3",     // Эпик c одной подзадачей
                 "До 24.00 11.12 отправить ТЗ 3 на ревью", 0,
-                "NEW");
+                Status.NEW);
         Epic epicTest2 = new Epic("Приготовить курицу",     // Эпик с двумя подзадачами
                 "Куринные ноги, замариновать, запечь в духовке к 14.30 10.12", 0,
-                "NEW");
+                Status.NEW);
 
         //  Отправляем новые задачи и эпики в трекер
         manager.makeNewTask(taskTest1);
@@ -29,14 +30,14 @@ public class Main {
         manager.makeNewEpic(epicTest2);
         //  ПОДЗДАЧИ ДЛЯ ПЕРВОГО ЭПИКА
         Subtask subtaskTest1 = new Subtask("Получить рабочую версию программы",
-                "Написать код для тестирования. Выполнить отладку", 0, "NEW",
+                "Написать код для тестирования. Выполнить отладку", 0, Status.NEW,
                 epicTest1.getId());
         // ПОДЗДААЧИ ДЛЯ ВТОРОГО ЭПИКА
         Subtask subtaskTest2 = new Subtask("Предобработка ног",
-                "Перфорировать, добавить перец, паприку, чеснок, соль", 0, "NEW",
+                "Перфорировать, добавить перец, паприку, чеснок, соль", 0, Status.NEW,
                 epicTest2.getId());
          Subtask subtaskTest3 = new Subtask("Запекание",
-                "40 минут на 200 градусов в духовке", 0, "NEW",
+                "40 минут на 200 градусов в духовке", 0, Status.NEW,
                 epicTest2.getId());
         // ОТПРАВЛЯЕМ ПОДЗАДАЧИ В ТРЕКЕР
         manager.makeNewSubtask(subtaskTest1);
@@ -52,10 +53,10 @@ public class Main {
         // Меняем статусы созданных объектов, распечатываем.
         // Простые задачи
         Task updateForTaskTest1 = new Task("Пробежка", "не менее 30 минут и не менее 5 км",
-                taskTest1.getId(), "DONE");
+                taskTest1.getId(), Status.DONE);
         Task updateForTaskTest2 = new Task("Гитарный конкурс",
                 "Отвезти сына на гитарный конкурс к 15.00",
-                taskTest2.getId(), "IN_PROGRESS");
+                taskTest2.getId(), Status.IN_PROGRESS);
         manager.updateTask( taskTest1.getId(), updateForTaskTest1);
         manager.updateTask( taskTest2.getId(), updateForTaskTest2);
 
@@ -63,13 +64,13 @@ public class Main {
         // Эпик 1
         Subtask updateForSubtaskTest1 = new Subtask("Получить рабочую версию программы",
                 "Написать код для тестирования. Выполнить отладку", subtaskTest1.getId(),
-                "IN_PROGRESS", epicTest1.getId());
+                Status.IN_PROGRESS, epicTest1.getId());
         Subtask updateForSubtaskTest2 = new Subtask("Предобработка ног",
                 "Перфорировать, добавить перец, паприку, чеснок, соль", subtaskTest2.getId(),
-                "DONE", epicTest2.getId());
+                Status.DONE, epicTest2.getId());
         Subtask updateForSubtaskTest3 = new Subtask("Запекание",
                 "40 минут на 200 градусов в духовке", subtaskTest3.getId(),
-                "DONE", epicTest2.getId());
+                Status.DONE, epicTest2.getId());
 
         manager.updateSubtask(subtaskTest1.getId(), updateForSubtaskTest1);
         manager.updateSubtask(subtaskTest2.getId(), updateForSubtaskTest2);
@@ -91,8 +92,8 @@ public class Main {
         System.out.println("После удаления оставшихся Эпиков:");
         System.out.println(manager.getListAllTasks());
     }
-    public static void printIdAndStatus(Manager manager, Task taskTest2, Epic epicTest1, Subtask subtaskTest1, Epic epicTest2,
-                                        Subtask subtaskTest2, Subtask subtaskTest3, Task taskTest1) {
+    public static void printIdAndStatus(Manager manager, Task taskTest2, Epic epicTest1, Subtask subtaskTest1,
+                                        Epic epicTest2, Subtask subtaskTest2, Subtask subtaskTest3, Task taskTest1) {
         System.out.println(" ========= ПРОСТЫЕ ЗАДАЧИ ======================");
         System.out.println("статус taskTest1 = " + manager.getTaskById(taskTest1.getId()).getStatus());
         System.out.println("id taskTest1 = " + manager.getTaskById(taskTest1.getId()).getId());
