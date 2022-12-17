@@ -1,3 +1,5 @@
+import ru.yandex.taskManager.HistoryManager;
+import ru.yandex.taskManager.InMemoryHistoryManager;
 import ru.yandex.taskManager.InMemoryTaskManager;
 import ru.yandex.tasks.Epic;
 import ru.yandex.tasks.Subtask;
@@ -7,7 +9,9 @@ import ru.yandex.tasks.Status;
 public class Main {
     public static void main(String[] args) {
         InMemoryTaskManager manager = new InMemoryTaskManager();
+        InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
         System.out.println("Поехали!");
+
 
         //Создайте 2 задачи, один эпик с 2 подзадачами, а другой эпик с 1 подзадачей.
         Task taskTest1 = new Task("Пробежка", "не менее 30 минут и не менее 5 км",
@@ -76,6 +80,7 @@ public class Main {
         manager.updateSubtask(subtaskTest2.getId(), updateForSubtaskTest2);
         manager.updateSubtask(subtaskTest3.getId(), updateForSubtaskTest3);
 
+
         // Проверяем, что статус задачи и подзадачи сохранился, а статус эпика рассчитался по статусам подзадач.
         System.out.println(" =====================  ВЫХЛОП ПОСЛЕ ИЗМЕНЕНИЯ СТАТУСОВ ==============================");
         printIdAndStatus(manager, taskTest2, epicTest1, subtaskTest1, epicTest2,
@@ -91,7 +96,9 @@ public class Main {
         manager.dellAllEpic();
         System.out.println("После удаления оставшихся Эпиков:");
         System.out.println(manager.getListAllTasks());
-    }
+   }
+
+
     public static void printIdAndStatus(InMemoryTaskManager manager, Task taskTest2, Epic epicTest1, Subtask subtaskTest1,
                                         Epic epicTest2, Subtask subtaskTest2, Subtask subtaskTest3, Task taskTest1) {
         System.out.println(" ========= ПРОСТЫЕ ЗАДАЧИ ======================");

@@ -5,12 +5,14 @@ import ru.yandex.tasks.Task;
 import ru.yandex.tasks.Status;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
     private int lastID; // здесь хранитися последний сгенерированный id всех задач
     private HashMap<Integer, Epic> epicTasks = new HashMap<>(); // для хранения всех ru.yandex.tasks.Epic задач
     private HashMap<Integer, Subtask> subtaskTasks = new HashMap<>(); // для хранения всех ru.yandex.tasks.Subtask задач
     private HashMap<Integer, Task> taskTasks = new HashMap<>(); // для хранения всех ru.yandex.tasks.Task задач
+    private InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
 
     // МЕТОДЫ ДЛЯ EPIC ==============================================================================================
     @Override
@@ -18,11 +20,12 @@ public class InMemoryTaskManager implements TaskManager {
         Epic newEpic = epic;
         int uniqueEpicId = makeID();
         newEpic.setId(uniqueEpicId);
-        epicTasks.put(uniqueEpicId, newEpic);         // сохранили объект, содержащий полное описание ru.yandex.tasks.Epic задачи
+        epicTasks.put(uniqueEpicId, newEpic);         // сохранили объект с описанием ru.yandex.tasks.Epic задачи
     }
     @Override
     public Epic getEpicById(int idForSearch) {        //Получение задачи ru.yandex.tasks.Epic по идентификатору.
         if (epicTasks.containsKey(idForSearch)) {
+            inMemoryHistoryManager.add(epicTasks.get(idForSearch));   // Добавляем объект в хранилище
             return epicTasks.get(idForSearch);
         } else {
             return null;
@@ -58,7 +61,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-
     // МЕТОДЫ ДЛЯ SUBTASKS-------------------------------------------------------------------------------------------
     @Override
     public void makeNewSubtask(Subtask subtask) {
@@ -73,6 +75,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubTaskById(int idForSearch) {       //Получение задачи subTask по идентификатору.
         if (subtaskTasks.containsKey(idForSearch)) {
+            inMemoryHistoryManager.add(subtaskTasks.get(idForSearch));   // Добавляем объект в хранилище
             return subtaskTasks.get(idForSearch);
         } else {
             return null;
@@ -125,6 +128,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(int idForSearch) {                   //Получение задачи ru.yandex.tasks.Task по идентификатору.
         if (taskTasks.containsKey(idForSearch)) {
+            inMemoryHistoryManager.add(taskTasks.get(idForSearch));      // Добавляем объект в хранилище
             return taskTasks.get(idForSearch);
         } else {
             return null;
@@ -155,6 +159,8 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
     // МЕТОДЫ ДЛЯ ЗАДАЧ ВСЕХ типов сразу  ===========================================================================
+
+
     @Override
     public ArrayList<Object> getListAllTasks() {                      //Получение списка всех задач всех типов
         ArrayList<Object> taskEpicSubtaskList = new ArrayList<Object>();
@@ -202,7 +208,7 @@ public class InMemoryTaskManager implements TaskManager {
     int makeID() {              // генератор id для задач всех типов
         return ++lastID;
     }
-}
 
+    }
 
 
