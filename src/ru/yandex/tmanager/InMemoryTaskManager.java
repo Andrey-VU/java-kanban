@@ -68,13 +68,14 @@ public class InMemoryTaskManager implements TaskManager {
         int uniqSubtaskId = makeID();                  // присвоили подзадаче уникальный id
         newSubtask.setId(uniqSubtaskId);               // присвоили подзадаче уникальный id
         getEpicById(newSubtask.getEpicID()).setMySubtask(newSubtask);         // отправить подзадачу в эпик
+        subtaskTasks.put(uniqSubtaskId, newSubtask);   // записали  подзадачу в хранилище
         statusChecker(newSubtask);                      // проверить статусы всех субтасков, входящих в Эпик,
         // скорректировать статус эпика, если необходимо
-        subtaskTasks.put(uniqSubtaskId, newSubtask);   // записали  подзадачу в хранилище
+
     }
     @Override
     public Subtask getSubTaskById(int idForSearch) {       //Получение задачи subTask по идентификатору.
-        if (subtaskTasks.containsKey(idForSearch)) {
+        if (subtaskTasks.containsKey(idForSearch) && !subtaskTasks.get(idForSearch).equals(null)) {
             Subtask tmpSubTask = subtaskTasks.get(idForSearch);
             historyManager.add(tmpSubTask);   // Добавляем объект в хранилище
             return tmpSubTask;
@@ -98,7 +99,7 @@ public class InMemoryTaskManager implements TaskManager {
         int counterINPROGRESS = 0;
         int counterDone = 0;
 
-        for (Subtask mySubtask : getEpicById(newSubtask.getEpicID()).getMySubtasks()) {
+        for (Subtask mySubtask : getEpicById(newSubtask.getEpicID()).getMySubtasks() ) {
             if (mySubtask.getStatus().equals("NEW"))    {
                 counterNEW += 1;
             } else if (mySubtask.getStatus().equals("IN_PROGRESS")) {
@@ -149,11 +150,11 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
     @Override
-    public ArrayList<Task> getListAllTasksFromTask() {                //Получение списка всех ru.yandex.tasks.Task задач
+    public ArrayList<Task> getListAllTasksFromTask() {          //Получение списка всех ru.yandex.tasks.Task задач
         ArrayList<Task> tasksList = new ArrayList<Task>();
         if (!taskTasks.isEmpty()) {
-            for (Integer id : taskTasks.keySet()) {
-                tasksList.add(taskTasks.get(id));
+            for (Task value : taskTasks.values()) {
+                tasksList.add(value);
             }
             return tasksList;
         } else {

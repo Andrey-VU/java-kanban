@@ -44,6 +44,7 @@ public class Main {
          Subtask subtaskTest3 = new Subtask("Запекание",
                 "40 минут на 200 градусов в духовке", 0, Status.NEW,
                 epicTest2.getId());
+
         // ОТПРАВЛЯЕМ ПОДЗАДАЧИ В ТРЕКЕР
         manager.makeNewSubtask(subtaskTest1);
         manager.makeNewSubtask(subtaskTest2);
