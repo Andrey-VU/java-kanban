@@ -1,11 +1,9 @@
-package ru.yandex.taskManager;
+package ru.yandex.tmanager;
 import ru.yandex.tasks.Epic;
 import ru.yandex.tasks.Subtask;
 import ru.yandex.tasks.Task;
-import ru.yandex.tasks.Status;
+
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 interface TaskManager {
     // МЕТОДЫ ДЛЯ EPIC ==============================================================================================
@@ -32,5 +30,5 @@ interface TaskManager {
     ArrayList<Object> getListAllTasks();                      //Получение списка всех задач всех типов
     void dellThemAll();                                       //Удаление всех задач.
     void dellTaskById(int idForDell);                         //Удаление по идентификатору.
-    //int makeID();
+    void printHistory();                                        //Метод просмотра истории
 }

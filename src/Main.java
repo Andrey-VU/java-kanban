@@ -1,17 +1,18 @@
-import ru.yandex.taskManager.HistoryManager;
-import ru.yandex.taskManager.InMemoryHistoryManager;
-import ru.yandex.taskManager.InMemoryTaskManager;
+import ru.yandex.tmanager.HistoryManager;
+import ru.yandex.tmanager.InMemoryHistoryManager;
+import ru.yandex.tmanager.InMemoryTaskManager;
 import ru.yandex.tasks.Epic;
 import ru.yandex.tasks.Subtask;
 import ru.yandex.tasks.Task;
 import ru.yandex.tasks.Status;
+import ru.yandex.tmanager.Managers;
 
 public class Main {
     public static void main(String[] args) {
         InMemoryTaskManager manager = new InMemoryTaskManager();
-        InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+        //InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+        HistoryManager historyManager = Managers.getDefaultHistory();
         System.out.println("Поехали!");
-
 
         //Создайте 2 задачи, один эпик с 2 подзадачами, а другой эпик с 1 подзадачей.
         Task taskTest1 = new Task("Пробежка", "не менее 30 минут и не менее 5 км",
@@ -49,6 +50,8 @@ public class Main {
         manager.makeNewSubtask(subtaskTest3);
         // Распечать списки эпиков, задач и подзадач, через System.out.println(..)
         System.out.println(manager.getListAllTasks());
+
+        manager.printHistory();  // печатаем история просмотров
 
         // Проверяем id и статусы
         printIdAndStatus(manager, taskTest2, epicTest1, subtaskTest1, epicTest2,
@@ -96,6 +99,8 @@ public class Main {
         manager.dellAllEpic();
         System.out.println("После удаления оставшихся Эпиков:");
         System.out.println(manager.getListAllTasks());
+
+        manager.printHistory();  // печатаем история просмотров
    }
 
 
