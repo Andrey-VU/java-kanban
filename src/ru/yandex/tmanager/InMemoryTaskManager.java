@@ -24,11 +24,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpicById(int idForSearch) {        //Получение задачи ru.yandex.tasks.Epic по идентификатору.
         if (epicTasks.containsKey(idForSearch)) {
-            historyManager.add(epicTasks.get(idForSearch));   // Добавляем объект в хранилище
-            return (Epic) historyManager.getHistory().getLast();
-            // Артём, не уверен сделал ли я то, что ты ожидал.  Поэтому пока не буду повторять этот фокус
-            // для аналогичных случаев, которые будут для subTask и Task.
-
+            Epic tmpEpic = epicTasks.get(idForSearch); // временная переменная для вытаскивания объекта из hashMap
+            historyManager.add(tmpEpic);               // Добавляем объект в хранилище
+            return tmpEpic;
         } else {
             return null;
         }
@@ -77,8 +75,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubTaskById(int idForSearch) {       //Получение задачи subTask по идентификатору.
         if (subtaskTasks.containsKey(idForSearch)) {
-            historyManager.add(subtaskTasks.get(idForSearch));   // Добавляем объект в хранилище
-            return subtaskTasks.get(idForSearch);
+            Subtask tmpSubTask = subtaskTasks.get(idForSearch);
+            historyManager.add(tmpSubTask);   // Добавляем объект в хранилище
+            return tmpSubTask;
         } else {
             return null;
         }
@@ -130,8 +129,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(int idForSearch) {                   //Получение задачи ru.yandex.tasks.Task по идентификатору.
         if (taskTasks.containsKey(idForSearch)) {
-            historyManager.add(taskTasks.get(idForSearch));      // Добавляем объект в хранилище
-            return taskTasks.get(idForSearch);
+            Task tmpTask = taskTasks.get(idForSearch);
+            historyManager.add(tmpTask);      // Добавляем объект в хранилище
+            return tmpTask;
         } else {
             return null;
         }
