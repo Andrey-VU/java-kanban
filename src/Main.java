@@ -1,5 +1,4 @@
 import ru.yandex.tmanager.HistoryManager;
-import ru.yandex.tmanager.InMemoryHistoryManager;
 import ru.yandex.tmanager.InMemoryTaskManager;
 import ru.yandex.tasks.Epic;
 import ru.yandex.tasks.Subtask;
@@ -10,7 +9,6 @@ import ru.yandex.tmanager.Managers;
 public class Main {
     public static void main(String[] args) {
         InMemoryTaskManager manager = new InMemoryTaskManager();
-        //InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
         HistoryManager historyManager = Managers.getDefaultHistory();
         System.out.println("Поехали!");
 
@@ -20,7 +18,6 @@ public class Main {
         Task taskTest2 = new Task("Гитарный конкурс",
                 "Отвезти сына на гитарный конкурс к 15.00",
                 0, Status.NEW);
-
         Epic epicTest1 = new Epic("Отправить на ревью ТЗ 3",     // Эпик c одной подзадачей
                 "До 24.00 11.12 отправить ТЗ 3 на ревью", 0,
                 Status.NEW);
@@ -64,12 +61,11 @@ public class Main {
                 taskTest1.getId(), Status.DONE);
         Task updateForTaskTest2 = new Task("Гитарный конкурс",
                 "Отвезти сына на гитарный конкурс к 15.00",
-                taskTest2.getId(), Status.IN_PROGRESS);
+                taskTest2.getId(), Status.DONE);
         manager.updateTask( taskTest1.getId(), updateForTaskTest1);
         manager.updateTask( taskTest2.getId(), updateForTaskTest2);
 
         // Подзадачи Эпиков
-        // Эпик 1
         Subtask updateForSubtaskTest1 = new Subtask("Получить рабочую версию программы",
                 "Написать код для тестирования. Выполнить отладку", subtaskTest1.getId(),
                 Status.IN_PROGRESS, epicTest1.getId());
@@ -83,7 +79,6 @@ public class Main {
         manager.updateSubtask(subtaskTest1.getId(), updateForSubtaskTest1);
         manager.updateSubtask(subtaskTest2.getId(), updateForSubtaskTest2);
         manager.updateSubtask(subtaskTest3.getId(), updateForSubtaskTest3);
-
 
         // Проверяем, что статус задачи и подзадачи сохранился, а статус эпика рассчитался по статусам подзадач.
         System.out.println(" =====================  ВЫХЛОП ПОСЛЕ ИЗМЕНЕНИЯ СТАТУСОВ ==============================");

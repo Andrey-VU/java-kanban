@@ -4,13 +4,7 @@ import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager{
 
-    private LinkedList<Task> historyOfView = new LinkedList<Task>() {
-        // Артём, добрый день! Я просто переписал LinkedList в строчке выше вместо List
-        // а также удалил все автоматически доабвленные ранее методы.
-        // До конца не уверен, что верно вношу здесь изменения
-        // удивлен синтаксису следующей скобки ' }; '
-        // первый раз такое вижу, чтобы точка с запятой после скобки
-    };
+    private LinkedList<Task> historyOfView = new LinkedList<Task>();
 
     @Override
     public void add(Task task) {

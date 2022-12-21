@@ -5,6 +5,7 @@ import ru.yandex.tasks.Task;
 import ru.yandex.tasks.Status;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class InMemoryTaskManager implements TaskManager {
     private int lastID; // здесь хранитися последний сгенерированный id всех задач
@@ -50,7 +51,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
     @Override
-    public void dellAllEpic() {    //Удаление всех задач и подзадач Эпика
+    public void dellAllEpic() {    //Удаление всех задач и подзадач типа Эпик из хранилища
         if (!epicTasks.isEmpty()) {
             for (Integer integer : epicTasks.keySet()) {
                 for (Subtask mySubtask : epicTasks.get(integer).getMySubtasks()) {
@@ -69,7 +70,7 @@ public class InMemoryTaskManager implements TaskManager {
         newSubtask.setId(uniqSubtaskId);               // присвоили подзадаче уникальный id
         getEpicById(newSubtask.getEpicID()).setMySubtask(newSubtask);         // отправить подзадачу в эпик
         subtaskTasks.put(uniqSubtaskId, newSubtask);   // записали  подзадачу в хранилище
-        statusChecker(newSubtask);                      // проверить статусы всех субтасков, входящих в Эпик,
+        statusChecker(getEpicById(subtask.getEpicID()));                      // проверить статусы всех субтасков, входящих в Эпик,
         // скорректировать статус эпика, если необходимо
 
     }
@@ -86,36 +87,46 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateSubtask(int idForUpdate, Subtask subtask) {
         if (subtaskTasks.containsKey(idForUpdate)) {
-            dellTaskById(subtask.getId());   // очищаем список подзадач эпика от старого эпика
+            if (getEpicById(subtask.getEpicID()).getMySubtasks().contains(subtask.getId())) {  // удалить саб из списка
+                getEpicById(subtask.getEpicID()).getMySubtasks().remove(getSubTaskById(subtask.getId()));
+                dellTaskById(subtask.getId());   // очищаем список подзадач эпика
+            }
+
             getEpicById(subtask.getEpicID()).setMySubtask(subtask);         // отправить подзадачу в эпик
             subtaskTasks.put(idForUpdate, subtask);
-            statusChecker(subtask);
         }
+        statusChecker(getEpicById(subtask.getEpicID()));
     }
+
     @Override
-    public void statusChecker(Subtask newSubtask) {   // метод проверки и пересчёта статусов для Эпиков
-        int counter = 0;
+    public void statusChecker(Epic newEpic) {   // метод проверки и пересчёта статусов для Эпиков
         int counterNEW = 0;
         int counterINPROGRESS = 0;
         int counterDone = 0;
-
-        for (Subtask mySubtask : getEpicById(newSubtask.getEpicID()).getMySubtasks() ) {
-            if (mySubtask.getStatus().equals("NEW"))    {
-                counterNEW += 1;
-            } else if (mySubtask.getStatus().equals("IN_PROGRESS")) {
-                counterINPROGRESS += 1;
-            } else if (mySubtask.getStatus().equals("DONE")) {
-                counterDone += 1;
+        for (Subtask mySubtask : newEpic.getMySubtasks()) {
+            System.out.println("Cтатус " + mySubtask + " = " + mySubtask.getStatus()  );  // ВНИМАНИЕ! ИДЁТ ОТЛАДКА
+            switch (mySubtask.getStatus()){
+                case NEW:
+                    counterNEW++;
+                    break;
+                case IN_PROGRESS:
+                    counterINPROGRESS++;
+                    break;
+                case DONE:
+                    counterDone++;
+                    break;
             }
-            counter += 1;
-        }
 
-        if (counterNEW == counter) {
-            getEpicById(newSubtask.getEpicID()).setStatus(Status.NEW);
-        } else if (counterDone == counter) {
-            getEpicById(newSubtask.getEpicID()).setStatus(Status.DONE);
+        }
+        System.out.println("Счётчики статусов: " + "\n" + "NEW = " + counterNEW + "\n" + "IN_PROGRESS = "
+                + counterINPROGRESS + "\n" + "DONE = " + counterDone );
+
+        if (counterNEW >= 0 && counterINPROGRESS == 0 && counterDone == 0) {
+            newEpic.setStatus(Status.NEW);
+        } else if (counterDone > 0 && counterNEW == 0 &&  counterINPROGRESS == 0) {
+            newEpic.setStatus(Status.DONE);
         } else {
-            getEpicById(newSubtask.getEpicID()).setStatus(Status.IN_PROGRESS);
+            newEpic.setStatus(Status.IN_PROGRESS);
         }
     }
 
@@ -162,16 +173,17 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
     // МЕТОДЫ ДЛЯ ЗАДАЧ ВСЕХ типов сразу  ===========================================================================
-
     @Override
+    public LinkedList<Task> getHistory() {
+        return historyManager.getHistory();
+    }
+
     public void printHistory() {
         System.out.println("================= ИСТОРИЯ ПРОСМОТРА ЗАДАЧ ============================");
-        for (Task task : historyManager.getHistory()) {
+        for (Task task : getHistory()) {
             System.out.println(task);
         }
     }
-
-
     @Override
     public ArrayList<Object> getListAllTasks() {                      //Получение списка всех задач всех типов
         ArrayList<Object> taskEpicSubtaskList = new ArrayList<Object>();
