@@ -70,7 +70,7 @@ public class InMemoryTaskManager implements TaskManager {
         newSubtask.setId(uniqSubtaskId);               // присвоили подзадаче уникальный id
         getEpicById(newSubtask.getEpicID()).setMySubtask(newSubtask);         // отправить подзадачу в эпик
         subtaskTasks.put(uniqSubtaskId, newSubtask);   // записали  подзадачу в хранилище
-        statusChecker(getEpicById(subtask.getEpicID()));                      // проверить статусы всех субтасков, входящих в Эпик,
+        statusChecker(getEpicById(subtask.getEpicID()));       // проверить статусы всех субтасков, входящих в Эпик,
         // скорректировать статус эпика, если необходимо
 
     }
@@ -87,11 +87,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateSubtask(int idForUpdate, Subtask subtask) {
         if (subtaskTasks.containsKey(idForUpdate)) {
-            if (getEpicById(subtask.getEpicID()).getMySubtasks().contains(subtask.getId())) {  // удалить саб из списка
-                getEpicById(subtask.getEpicID()).getMySubtasks().remove(getSubTaskById(subtask.getId()));
-                dellTaskById(subtask.getId());   // очищаем список подзадач эпика
-            }
-
+            getEpicById(subtask.getEpicID()).getMySubtasks().remove(getSubTaskById(subtask.getId()));
+            dellTaskById(subtask.getId());   // очищаем список подзадач эпика и главное хранилище подзадач
             getEpicById(subtask.getEpicID()).setMySubtask(subtask);         // отправить подзадачу в эпик
             subtaskTasks.put(idForUpdate, subtask);
         }
