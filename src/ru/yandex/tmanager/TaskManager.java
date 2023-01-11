@@ -29,7 +29,7 @@ interface TaskManager {
     ArrayList<Task> getListAllTasksFromTask();               //Получение списка всех ru.yandex.tasks.Task задач
 
     // МЕТОДЫ ДЛЯ ЗАДАЧ ВСЕХ типов сразу  ===========================================================================
-    LinkedList<Task> getHistory();  // получение 10 объектов истории просмотров
+    ArrayList<Task> getHistory();  // получение 10 объектов истории просмотров
     ArrayList<Object> getListAllTasks();                      //Получение списка всех задач всех типов
     void dellThemAll();                                       //Удаление всех задач.
     void dellTaskById(int idForDell);                         //Удаление по идентификатору.

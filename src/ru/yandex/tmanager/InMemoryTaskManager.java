@@ -171,7 +171,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
     // МЕТОДЫ ДЛЯ ЗАДАЧ ВСЕХ типов сразу  ===========================================================================
     @Override
-    public LinkedList<Task> getHistory() {
+    public ArrayList<Task> getHistory() {
         return historyManager.getHistory();
     }
 
