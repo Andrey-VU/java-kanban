@@ -3,40 +3,53 @@ import ru.yandex.tasks.Task;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager{
-    Map<Integer, Task> historyOfView = new HashMap<>();  // для хранения истории просмотров
-    List<Task> rangeOfView = new ArrayList<Task>();      // для хранения порядка вызовов удобно использовать список.
+    Map<Integer, Node<Task>> historyOfView = new HashMap<>();  // для хранения истории просмотров
     private Node<Task> head;      // Указатель на первый элемент списка. Он же first
     private Node<Task> tail;      // Указатель на последний элемент списка. Он же last
     private int size = 0;         // Размер хранилища
 
-    @Override
-    public void add(Task task) {
+    public void linkLast(Task task) {
         final Node<Task> oldTail = tail;
-        final Node<Task> oldHead = head;
-        final Node<Task> newNode = new Node<>(oldHead, task, oldTail);
+        final Node<Task> newNode = new Node<>(oldTail, task, null);
         tail = newNode;
         if (oldTail == null)
             head = newNode;
         else
             oldTail.prev = newNode;
         size++;
-        historyOfView.put(task.getId(), task);
-        rangeOfView.add(task);
+        historyOfView.put(task.getId(), newNode);
     }
+
+    public ArrayList<Task> getTask(){
+        List<Task> listOfView = new ArrayList<Task>();
+        for (Node<Task> value : historyOfView.values()) {
+            listOfView.add(value.item);
+        }
+        return (ArrayList<Task>) listOfView;
+    }
+
+    public void removeNode(Node<Task> node) {
+        if (historyOfView.keySet().contains(node.item.getId())) {
+        historyOfView.remove(node.item.getId());
+        }
+    }
+
+    @Override
+    public void add(Task task) {
+        if (historyOfView.keySet().contains(task.getId())) {
+            removeNode(historyOfView.get(task.getId()));
+        }
+        linkLast(task);
+        }
 
     @Override
     public void remove(int id) {
         historyOfView.remove(id);
     }
-
     @Override
     public ArrayList<Task> getHistory() {
-        return (ArrayList<Task>) rangeOfView;
+        return getTask();
     }
-    /*  Программа должна запоминать порядок вызовов метода add, ведь именно в этом порядке просмотры будут выстраиваться
-    в истории. Внутри класса нужно реализовать методы linkLast, getTasks и removeNode
-    Если какая-либо задача просматривалась несколько раз, в истории должен отобразиться только последний просмотр.
-    Предыдущий просмотр должен быть удалён сразу же после появления нового     */
 
     private static class Node<Task> {
         Task item;
@@ -49,14 +62,6 @@ public class InMemoryHistoryManager implements HistoryManager{
             this.prev = prev;
         }
     }
-
-
 }
-
-
-/*
-void remove(int id) для удаления задачи из просмотра. И реализовать его в классе InMemoryHistoryManager.
-Добавьте его вызов при удалении задач, чтобы они также удалялись из истории просмотров.
- */
 
 

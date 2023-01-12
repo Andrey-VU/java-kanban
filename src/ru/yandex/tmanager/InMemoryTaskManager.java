@@ -56,6 +56,7 @@ public class InMemoryTaskManager implements TaskManager {
             for (Integer integer : epicTasks.keySet()) {
                 for (Subtask mySubtask : epicTasks.get(integer).getMySubtasks()) {
                     dellTaskById(mySubtask.getId());
+                    historyManager.remove(mySubtask.getId());     // удаление задачи из истории просмотров
                 }
             }
             epicTasks.clear();
@@ -101,7 +102,7 @@ public class InMemoryTaskManager implements TaskManager {
         int counterINPROGRESS = 0;
         int counterDone = 0;
         for (Subtask mySubtask : newEpic.getMySubtasks()) {
-            System.out.println("Cтатус " + mySubtask + " = " + mySubtask.getStatus()  );  // ВНИМАНИЕ! ИДЁТ ОТЛАДКА
+            System.out.println("Cтатус " + mySubtask + " = " + mySubtask.getStatus()  );
             switch (mySubtask.getStatus()){
                 case NEW:
                     counterNEW++;
@@ -215,13 +216,16 @@ public class InMemoryTaskManager implements TaskManager {
     public void dellTaskById(int idForDell) {  //Удаление по идентификатору.
         if (taskTasks.containsKey(idForDell)) {
             taskTasks.remove(idForDell);
+            historyManager.remove(idForDell);
         } else if (epicTasks.containsKey(idForDell)) {
             for (Subtask mySubtask : epicTasks.get(idForDell).getMySubtasks()) {
                 dellTaskById(mySubtask.getId());
+                historyManager.remove(idForDell);
             }
             epicTasks.remove(idForDell);
         } else if (subtaskTasks.containsKey(idForDell)) {
             subtaskTasks.remove(idForDell);
+            historyManager.remove(idForDell);
         }
     }
 
