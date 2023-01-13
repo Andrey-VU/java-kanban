@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 public class InMemoryTaskManager implements TaskManager {
-    private int lastID; // здесь хранитися последний сгенерированный id всех задач
+    private int lastID; //  здесь хранитися последний сгенерированный id всех задач
     private HashMap<Integer, Epic> epicTasks = new HashMap<>(); // для хранения всех ru.yandex.tasks.Epic задач
     private HashMap<Integer, Subtask> subtaskTasks = new HashMap<>(); // для хранения всех ru.yandex.tasks.Subtask задач
     private HashMap<Integer, Task> taskTasks = new HashMap<>(); // для хранения всех ru.yandex.tasks.Task задач

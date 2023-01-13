@@ -12,7 +12,7 @@ public class Main {
         HistoryManager historyManager = Managers.getDefaultHistory();
         System.out.println("Поехали!");
 
-        //Создайте 2 задачи, один эпик с 2 подзадачами, а другой эпик с 1 подзадачей.
+        //Создайте 2 задачи, один эпик с 2 подзадачами, а другой эпик с 1 подзадачей
         Task taskTest1 = new Task("Пробежка", "не менее 30 минут и не менее 5 км",
                 0, Status.NEW);
         Task taskTest2 = new Task("Гитарный конкурс",
