@@ -4,7 +4,7 @@ import ru.yandex.tasks.Task;
 import java.beans.Introspector;
 import java.util.*;
 
-public class InMemoryHistoryManager implements HistoryManager{
+public class InMemoryHistoryManager implements HistoryManager {
     Map<Integer, Node<Task>> historyOfView = new HashMap<>();  // для хранения истории просмотров
     List<Node<Task>> rangeOfView = new ArrayList<Node<Task>>();     // для хранения порядка просмотра
     List<Integer> rangeOfViewId = new ArrayList<Integer>();     // для хранения порядка просмотра по Ид
@@ -24,6 +24,7 @@ public class InMemoryHistoryManager implements HistoryManager{
         historyOfView.put(task.getId(), newNode);
         rangeOfViewId.add(task.getId());             // для сохранения порядка хранения по Ид
     }
+
     public void removeNode(Node<Task> node) {
         if (historyOfView.keySet().contains(node.item.getId())) {
             Node<Task> prevNode = node.prev;
@@ -38,7 +39,7 @@ public class InMemoryHistoryManager implements HistoryManager{
         }
     }
 
-    public List<Node<Task>> getTask(){
+    public List<Node<Task>> getTask() {
         List<Node<Task>> listOfTask = new ArrayList<>();
         for (Node<Task> value : historyOfView.values()) {
             listOfTask.add(value);
@@ -82,22 +83,4 @@ public class InMemoryHistoryManager implements HistoryManager{
             this.prev = prev;
         }
     }
-<<<<<<< HEAD
 }
-=======
-}
-
-
-/*
-               !node.prev.equals(null)
-               int indexPrev = rangeOfViewId.indexOf((node.item.getId()) - 1);
-                Integer idOfPrev = rangeOfViewId.get(indexPrev);
-                prevNode = historyOfView.get(idOfPrev);
-                prevNode.prev = node.prev; */
-/*
-                !node.next.equals(null)
-                int indexNext = rangeOfViewId.indexOf((node.item.getId()) + 1);
-                Integer idOfNext = rangeOfViewId.get(indexNext);
-                nextNode = historyOfView.get(idOfNext);
-                nextNode.next = node.next; */
->>>>>>> refs/remotes/origin/main
