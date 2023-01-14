@@ -82,4 +82,22 @@ public class InMemoryHistoryManager implements HistoryManager{
             this.prev = prev;
         }
     }
+<<<<<<< HEAD
 }
+=======
+}
+
+
+/*
+               !node.prev.equals(null)
+               int indexPrev = rangeOfViewId.indexOf((node.item.getId()) - 1);
+                Integer idOfPrev = rangeOfViewId.get(indexPrev);
+                prevNode = historyOfView.get(idOfPrev);
+                prevNode.prev = node.prev; */
+/*
+                !node.next.equals(null)
+                int indexNext = rangeOfViewId.indexOf((node.item.getId()) + 1);
+                Integer idOfNext = rangeOfViewId.get(indexNext);
+                nextNode = historyOfView.get(idOfNext);
+                nextNode.next = node.next; */
+>>>>>>> refs/remotes/origin/main
