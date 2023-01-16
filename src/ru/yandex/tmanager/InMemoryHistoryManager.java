@@ -39,11 +39,9 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     public List<Node<Task>> getTask() {
         Node<Task> tmpNode = head;
-        while(tmpNode.equals(tail)) {
+        while(tmpNode.next != null) {
              rangeOfView.add(tmpNode);
-             if (tmpNode.next != null) {
-                 tmpNode = tmpNode.next;
-             }
+             tmpNode = tmpNode.next;
         }
         return rangeOfView;
     }
