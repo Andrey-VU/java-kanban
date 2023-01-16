@@ -7,7 +7,6 @@ import java.util.*;
 public class InMemoryHistoryManager implements HistoryManager {
     Map<Integer, Node<Task>> historyOfView = new HashMap<>();  // для хранения истории просмотров
     List<Node<Task>> rangeOfView = new ArrayList<Node<Task>>();     // для хранения порядка просмотра
-    List<Integer> rangeOfViewId = new ArrayList<Integer>();     // для хранения порядка просмотра по Ид
     private Node<Task> head;       // Указатель на первый элемент списка. Он же first
     private Node<Task> tail;       // Указатель на последний элемент списка. Он же last
     private int size = 0;          // Размер хранилища
@@ -22,7 +21,6 @@ public class InMemoryHistoryManager implements HistoryManager {
             oldTail.prev = newNode;
         size++;
         historyOfView.put(task.getId(), newNode);
-        rangeOfViewId.add(task.getId());             // для сохранения порядка хранения по Ид
     }
 
     public void removeNode(Node<Task> node) {
@@ -40,11 +38,14 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     public List<Node<Task>> getTask() {
-        List<Node<Task>> listOfTask = new ArrayList<>();
-        for (Node<Task> value : historyOfView.values()) {
-            listOfTask.add(value);
+        Node<Task> tmpNode = head;
+        while(tmpNode.equals(tail)) {
+             rangeOfView.add(tmpNode);
+             if (tmpNode.next != null) {
+                 tmpNode = tmpNode.next;
+             }
         }
-        return listOfTask;
+        return rangeOfView;
     }
 
     public void add(Task task) {
@@ -58,7 +59,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        if (historyOfView.get(id) != null) {
+        if (historyOfView.keySet().contains(id)) {
             removeNode(historyOfView.remove(id));
         }
     }
