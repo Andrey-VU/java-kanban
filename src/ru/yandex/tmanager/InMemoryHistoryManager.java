@@ -6,7 +6,7 @@ import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
     Map<Integer, Node<Task>> historyOfView = new HashMap<>();  // для хранения истории просмотров
-    List<Node<Task>> rangeOfView = new ArrayList<Node<Task>>();     // для хранения порядка просмотра
+    List<Task> rangeOfView = new ArrayList<Task>();     // для хранения порядка просмотра
     private Node<Task> head;       // Указатель на первый элемент списка. Он же first
     private Node<Task> tail;       // Указатель на последний элемент списка. Он же last
     private int size = 0;          // Размер хранилища
@@ -37,13 +37,14 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    public List<Node<Task>> getTask() {
+    @Override
+    public ArrayList<Task> getHistory() {
         Node<Task> tmpNode = head;
         while(tmpNode.next != null) {
-             rangeOfView.add(tmpNode);
-             tmpNode = tmpNode.next;
+            rangeOfView.add(tmpNode.item);
+            tmpNode = tmpNode.next;
         }
-        return rangeOfView;
+        return (ArrayList<Task>) rangeOfView;
     }
 
     public void add(Task task) {
@@ -62,14 +63,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    @Override
-    public ArrayList<Task> getHistory() {
-        ArrayList<Task> tmp = new ArrayList<>();
-        for (Node<Task> taskNode : getTask()) {
-            tmp.add(taskNode.item);
-        }
-        return tmp;
-    }
 
     private static class Node<Task> {
         Task item;
