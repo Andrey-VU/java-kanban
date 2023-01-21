@@ -22,7 +22,7 @@ interface TaskManager {
 
 
     // МЕТОДЫ ДЛЯ TASK   =============================================================================================
-    void makeNewTask(Task task);                            // создатьновую задачу
+    void makeNewTask(Task task);                            // создать новую задачу
     Task getTaskById(int idForSearch);                      //Получение задачи ru.yandex.tasks.Task по идентификатору.
     void updateTask(int idForUpdate, Task newTask);
     void clearTask();

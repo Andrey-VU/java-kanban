@@ -14,6 +14,20 @@ public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, Task> taskTasks = new HashMap<>(); // для хранения всех ru.yandex.tasks.Task задач
     private HistoryManager historyManager = Managers.getDefaultHistory();
 
+
+    public HashMap<Integer, Epic> getEpicTasks() {
+        return epicTasks;
+    }
+    public HashMap<Integer, Subtask> getSubtaskTasks() {
+        return subtaskTasks;
+    }
+    public HashMap<Integer, Task> getTaskTasks() {
+        return taskTasks;
+    }
+    public HistoryManager getHistoryManager() {
+        return historyManager;
+    }
+
     // МЕТОДЫ ДЛЯ EPIC ==============================================================================================
     @Override
     public void makeNewEpic(Epic epic) {              // новая Эпик задача
