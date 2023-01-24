@@ -34,6 +34,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             if (nextNode != null) {
                 nextNode.prev = prevNode;
             }
+            size--;
         }
     }
 

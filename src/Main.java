@@ -6,8 +6,10 @@ import ru.yandex.tasks.Task;
 import ru.yandex.tasks.Status;
 import ru.yandex.tmanager.Managers;
 
+import java.io.IOException;
+
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         InMemoryTaskManager manager = new InMemoryTaskManager();
         HistoryManager historyManager = Managers.getDefaultHistory();
         System.out.println("Поехали!");

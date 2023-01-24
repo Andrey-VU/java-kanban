@@ -3,16 +3,26 @@ package ru.yandex.tasks;
 import java.util.Objects;
 
 public class Task {
+
     private String name;                   // название
     private String description;            // описание, в котором раскрываются детали
     private int id;                        // Уникальный идентификационный номер
     private Status status;                 // Статус прогресса работы над задачей
+    private Type type;                      // Тип задачи
 
     public Task(String name, String description, Integer id, Status status) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = status;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public Type getType() {
+        return type;
     }
 
     public void setId(int id) {
@@ -53,4 +63,12 @@ public class Task {
                 '}';
     }
 
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }
