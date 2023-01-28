@@ -1,6 +1,7 @@
 package ru.yandex.tasks;
-
 import java.util.Objects;
+
+import static ru.yandex.tasks.Type.TASK;
 
 public class Task {
 
@@ -8,28 +9,25 @@ public class Task {
     private String description;            // описание, в котором раскрываются детали
     private int id;                        // Уникальный идентификационный номер
     private Status status;                 // Статус прогресса работы над задачей
-    private Type type;                      // Тип задачи
+    Type type;                      // Тип задачи
 
     public Task(String name, String description, Integer id, Status status) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = status;
+        type = Type.TASK;
     }
 
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setId(int id) {
+        public void setId(int id) {
         this.id = id;
     }
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Type getType() {
+        return type;
     }
     public int getId() {
         return id;
@@ -37,7 +35,12 @@ public class Task {
     public Status getStatus() {
         return status;
     }
-
+    public String getName() {
+        return name;
+    }
+    public String getDescription() {
+        return description;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -61,14 +64,5 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", status=" + status +
                 '}';
-    }
-
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
     }
 }

@@ -1,3 +1,4 @@
+import ru.yandex.exceptions.ManagerSaveException;
 import ru.yandex.tmanager.HistoryManager;
 import ru.yandex.tmanager.InMemoryTaskManager;
 import ru.yandex.tasks.Epic;
@@ -9,7 +10,7 @@ import ru.yandex.tmanager.Managers;
 import java.io.IOException;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ManagerSaveException {
         InMemoryTaskManager manager = new InMemoryTaskManager();
         HistoryManager historyManager = Managers.getDefaultHistory();
         System.out.println("Поехали!");

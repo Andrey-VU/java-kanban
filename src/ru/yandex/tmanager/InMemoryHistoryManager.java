@@ -20,7 +20,9 @@ public class InMemoryHistoryManager implements HistoryManager {
         else
             oldTail.prev = newNode;
         size++;
-        historyOfView.put(task.getId(), newNode);
+        if (task != null) {
+            historyOfView.put(task.getId(), newNode);
+        }
     }
 
     public void removeNode(Node<Task> node) {

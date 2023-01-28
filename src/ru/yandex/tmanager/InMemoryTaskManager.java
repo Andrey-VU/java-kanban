@@ -1,7 +1,6 @@
 package ru.yandex.tmanager;
 import ru.yandex.tasks.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -11,7 +10,6 @@ public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, Subtask> subtaskTasks = new HashMap<>(); // для хранения всех ru.yandex.tasks.Subtask задач
     private HashMap<Integer, Task> taskTasks = new HashMap<>(); // для хранения всех ru.yandex.tasks.Task задач
     private HistoryManager historyManager = Managers.getDefaultHistory();
-
 
     public HashMap<Integer, Epic> getEpicTasks() {
         return epicTasks;
@@ -28,13 +26,16 @@ public class InMemoryTaskManager implements TaskManager {
 
     // МЕТОДЫ ДЛЯ EPIC ==============================================================================================
     @Override
-    public void makeNewEpic(Epic epic) throws IOException {              // новая Эпик задача
+    public void makeNewEpic(Epic epic) {              // новая Эпик задача
+        if (epic != null) {
         Epic newEpic = epic;
-        newEpic.setType(Type.EPIC);
-        int uniqueEpicId = makeID();
-        newEpic.setId(uniqueEpicId);
-        epicTasks.put(uniqueEpicId, newEpic);         // сохранили объект с описанием ru.yandex.tasks.Epic задачи
+
+            int uniqueEpicId = makeID();
+            newEpic.setId(uniqueEpicId);
+            epicTasks.put(uniqueEpicId, newEpic);         // сохранили объект с описанием ru.yandex.tasks.Epic задачи
+        }
     }
+
     @Override
     public Epic getEpicById(int idForSearch) {        //Получение задачи ru.yandex.tasks.Epic по идентификатору.
         if (epicTasks.containsKey(idForSearch)) {
@@ -46,7 +47,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
     @Override
-    public void updateEpic(int idForUpdate, Epic epic) throws IOException {   // Обновление Эпика по id
+    public void updateEpic(int idForUpdate, Epic epic)  {   // Обновление Эпика по id
         if (epicTasks.containsKey(idForUpdate)) {
             epicTasks.put(idForUpdate, epic);
         }
@@ -64,7 +65,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
     @Override
-    public void dellAllEpic() throws IOException {    //Удаление всех задач и подзадач типа Эпик из хранилища
+    public void dellAllEpic() {    //Удаление всех задач и подзадач типа Эпик из хранилища
         if (!epicTasks.isEmpty()) {
             for (Integer integer : epicTasks.keySet()) {
                 for (Subtask mySubtask : epicTasks.get(integer).getMySubtasks()) {
@@ -78,16 +79,19 @@ public class InMemoryTaskManager implements TaskManager {
 
     // МЕТОДЫ ДЛЯ SUBTASKS-------------------------------------------------------------------------------------------
     @Override
-    public void makeNewSubtask(Subtask subtask) throws IOException {
-        Subtask newSubtask = subtask;              // создали подзадачу. уже здесь есть статус и есть инфо об Эпике
-        newSubtask.setType(Type.SUBTASK);
-        int uniqSubtaskId = makeID();                  // присвоили подзадаче уникальный id
-        newSubtask.setId(uniqSubtaskId);               // присвоили подзадаче уникальный id
-        getEpicById(newSubtask.getEpicID()).setMySubtask(newSubtask);         // отправить подзадачу в эпик
-        subtaskTasks.put(uniqSubtaskId, newSubtask);   // записали  подзадачу в хранилище
-        statusChecker(getEpicById(subtask.getEpicID()));       // проверить статусы всех субтасков, входящих в Эпик,
-        // скорректировать статус эпика, если необходимо
+    public void makeNewSubtask(Subtask subtask)  {
+        if (subtask != null) {
+            Subtask newSubtask = subtask;              // создали подзадачу. уже здесь есть статус и есть инфо об Эпике
 
+            int uniqSubtaskId = makeID();                  // присвоили подзадаче уникальный id
+            newSubtask.setId(uniqSubtaskId);               // присвоили подзадаче уникальный id
+            if (getEpicById(newSubtask.getEpicID()) != null) {
+                getEpicById(newSubtask.getEpicID()).setMySubtask(newSubtask);         // отправить подзадачу в эпик
+                subtaskTasks.put(uniqSubtaskId, newSubtask);   // записали  подзадачу в хранилище
+                statusChecker(getEpicById(subtask.getEpicID()));       // проверить статусы всех субтасков, входящих в Эпик,
+                // скорректировать статус эпика, если необходимо
+            }
+        }
     }
     @Override
     public Subtask getSubTaskById(int idForSearch) {       //Получение задачи subTask по идентификатору.
@@ -100,7 +104,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
     @Override
-    public void updateSubtask(int idForUpdate, Subtask subtask) throws IOException {
+    public void updateSubtask(int idForUpdate, Subtask subtask) {
         if (subtaskTasks.containsKey(idForUpdate)) {
             getEpicById(subtask.getEpicID()).getMySubtasks().remove(getSubTaskById(subtask.getId()));
             dellTaskById(subtask.getId());   // очищаем список подзадач эпика и главное хранилище подзадач
@@ -144,12 +148,14 @@ public class InMemoryTaskManager implements TaskManager {
 
     // МЕТОДЫ ДЛЯ TASK   =============================================================================================
     @Override
-    public void makeNewTask(Task task) throws IOException {   // новая задача
-        Task newTask = task;
-        newTask.setType(Type.TASK);
-        int uniqueId = makeID();
-        newTask.setId(uniqueId);
-        taskTasks.put(uniqueId, newTask);   // сохранили объект, содержащий полное описание задачи в хранилище
+    public void makeNewTask(Task task) {   // новая задача
+        if (task != null) {
+            Task newTask = task;
+
+            int uniqueId = makeID();
+            newTask.setId(uniqueId);
+            taskTasks.put(uniqueId, newTask);   // сохранили объект, содержащий полное описание задачи в хранилище
+        }
     }
     @Override
     public Task getTaskById(int idForSearch) {                   //Получение задачи ru.yandex.tasks.Task по идентификатору.
@@ -162,13 +168,13 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
     @Override
-    public void updateTask(int idForUpdate, Task newTask) throws IOException {   //Обновление задач ru.yandex.tasks.Task
+    public void updateTask(int idForUpdate, Task newTask)  {   //Обновление задач ru.yandex.tasks.Task
         if (taskTasks.containsKey(idForUpdate)) {
             taskTasks.put(idForUpdate, newTask);
         }
     }
     @Override
-    public void clearTask() throws IOException {                                        // Очистка списка всех задач ru.yandex.tasks.Task
+    public void clearTask()  {                                        // Очистка списка всех задач ru.yandex.tasks.Task
         if (!taskTasks.isEmpty()) {
             taskTasks.clear();
         }
@@ -191,7 +197,7 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
-    public void printHistory() throws IOException {
+    public void printHistory()  {
         System.out.println("================= ИСТОРИЯ ПРОСМОТРА ЗАДАЧ ============================");
         for (Task task : getHistory()) {
             System.out.println(task);
@@ -218,7 +224,7 @@ public class InMemoryTaskManager implements TaskManager {
         return taskEpicSubtaskList;
     }
     @Override
-    public void dellThemAll() throws IOException {    //Удаление всех задач.
+    public void dellThemAll()  {    //Удаление всех задач.
         if (!taskTasks.isEmpty()) {
             taskTasks.clear();
         } if (!epicTasks.isEmpty()) {
@@ -228,7 +234,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
     @Override
-    public void dellTaskById(int idForDell) throws IOException {  //Удаление по идентификатору.
+    public void dellTaskById(int idForDell)  {  //Удаление по идентификатору.
         if (taskTasks.containsKey(idForDell)) {
             taskTasks.remove(idForDell);
             historyManager.remove(idForDell);
@@ -247,6 +253,18 @@ public class InMemoryTaskManager implements TaskManager {
     int makeID() {              // генератор id для задач всех типов
         return ++lastID;
     }
+
+    /*
+id,type,name,status,description,epic
+1,TASK,Task1,NEW,Description task1,
+2,EPIC,Epic2,DONE,Description epic2,
+3,SUBTASK,Sub Task2,DONE,Description sub task3,2
+     */
+
+    String toStringForFile(Task task) {
+        return task.getId() + "," + task.getType() + "," + task.getName() +  "," + task.getStatus() + ","
+                + task.getDescription();
     }
+}
 
 
