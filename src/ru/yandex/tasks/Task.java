@@ -9,7 +9,7 @@ public class Task {
     private String description;            // описание, в котором раскрываются детали
     private int id;                        // Уникальный идентификационный номер
     private Status status;                 // Статус прогресса работы над задачей
-    Type type;                      // Тип задачи
+    public Type type;                      // Тип задачи
 
     public Task(String name, String description, Integer id, Status status) {
         this.name = name;
@@ -19,13 +19,24 @@ public class Task {
         type = Type.TASK;
     }
 
-        public void setId(int id) {
+    public Task(String[] fromArray) {
+        this.id =  Integer.parseInt(fromArray[0]);
+        this.type = Type.valueOf(fromArray[1]);
+        this.name = fromArray[2];
+        this.status = Status.valueOf(fromArray[3]);
+        this.description = fromArray[4];
+    }
+
+    public void setId(int id) {
         this.id = id;
     }
     public void setStatus(Status status) {
         this.status = status;
     }
 
+    public void setType(Type type) {
+        this.type = type;
+    }
     public Type getType() {
         return type;
     }
