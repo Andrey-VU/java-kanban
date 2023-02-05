@@ -19,11 +19,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         FileBackedTasksManager loadedFromFile = loadFromFile(file);
 
          if (loadedFromFile != null) {
-            loadedFromFile.dellTaskById(3);
-            loadedFromFile.getTaskTasks().get(6);
-            loadedFromFile.getHistory().toString();
-            loadedFromFile.dellTaskById(6);
-            loadedFromFile.getTaskById(4);
+             loadedFromFile.getTaskById(3);
+             loadedFromFile.dellTaskById(3);
+             loadedFromFile.getHistory().toString();
+             loadedFromFile.getTaskById(6);
+             loadedFromFile.dellTaskById(6);
+             loadedFromFile.getTaskById(4);
+             loadedFromFile.getTaskById(2);
         }
     }
 
@@ -46,6 +48,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 bw.write(toStringForFile(value));
                 bw.newLine();
             }
+            bw.newLine();
             bw.write(historyToString(getHistoryManager()));
 
         } catch (IOException exception) {
@@ -132,7 +135,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         String[] tmpArray = s.split(",");
         for (int i = 0; i < tmpArray.length; i++) {
             if (tmpArray.length == 5) {
-
                 if (Type.valueOf(tmpArray[1]).equals("TASK")) {
                     Task taskFromFile = new Task(tmpArray);
                     return taskFromFile;
@@ -140,7 +142,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     Epic taskFromFile = new Epic(tmpArray);
                     return taskFromFile;
                 }
-
             } else if (tmpArray.length == 6) {
                 Subtask taskFromFile = new Subtask(tmpArray);
                 return taskFromFile;
@@ -169,7 +170,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public Epic getEpicById(int idForSearch) {
         return super.getEpicById(idForSearch);
+    }
 
+    @Override
+    public HistoryManager getHistoryManager() {
+        return super.getHistoryManager();
     }
 
     @Override
@@ -283,9 +288,4 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public boolean equals(Object obj) {
         return super.equals(obj);
     }
-
 }
-
-
-
-

@@ -82,7 +82,6 @@ public class InMemoryTaskManager implements TaskManager {
     public void makeNewSubtask(Subtask subtask)  {
         if (subtask != null) {
             Subtask newSubtask = subtask;              // создали подзадачу. уже здесь есть статус и есть инфо об Эпике
-
             int uniqSubtaskId = makeID();                  // присвоили подзадаче уникальный id
             newSubtask.setId(uniqSubtaskId);               // присвоили подзадаче уникальный id
             if (getEpicById(newSubtask.getEpicID()) != null) {

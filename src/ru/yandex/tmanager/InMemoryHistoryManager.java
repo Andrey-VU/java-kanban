@@ -1,12 +1,9 @@
 package ru.yandex.tmanager;
 import ru.yandex.tasks.Task;
-
-import java.beans.Introspector;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
     Map<Integer, Node<Task>> historyOfView = new HashMap<>();  // для хранения истории просмотров
-    List<Task> rangeOfView = new ArrayList<Task>();     // для хранения порядка просмотра
     private Node<Task> head;       // Указатель на первый элемент списка. Он же first
     private Node<Task> tail;       // Указатель на последний элемент списка. Он же last
     private int size = 0;          // Размер хранилища
@@ -42,11 +39,19 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public ArrayList<Task> getHistory() {
+        List<Task> rangeOfView = new ArrayList<Task>();
         Node<Task> tmpNode = head;
-        while(tmpNode.next != null) {
-            rangeOfView.add(tmpNode.item);
-            tmpNode = tmpNode.next;
+        rangeOfView.add(tmpNode.item);
+        for (int i = 0; i < size; i++){
+            if (tmpNode.next != null){
+                tmpNode = tmpNode.next;
+                rangeOfView.add(tmpNode.item);
+            }
         }
+       // while (tmpNode.next != null) {
+         //   rangeOfView.add(tmpNode.item);
+        //    tmpNode = tmpNode.next;
+         //   }
         return (ArrayList<Task>) rangeOfView;
     }
 
