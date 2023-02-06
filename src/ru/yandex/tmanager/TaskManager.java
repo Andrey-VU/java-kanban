@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-interface TaskManager {
+public interface TaskManager {
     // МЕТОДЫ ДЛЯ EPIC ==============================================================================================
     void makeNewEpic(Epic epic) throws IOException, ManagerSaveException;                           // создать/сохранить новую Эпик задачу
     Epic getEpicById(int idForSearch);                     //Получить задачи  ru.yandex.tasks.Epic по идентификатору
@@ -35,4 +35,6 @@ interface TaskManager {
     ArrayList<Object> getListAllTasks();                      //Получение списка всех задач всех типов
     void dellThemAll() throws IOException, ManagerSaveException;                                       //Удаление всех задач.
     void dellTaskById(int idForDell) throws IOException, ManagerSaveException;                         //Удаление по идентификатору.
+
+    void printHistory();
 }

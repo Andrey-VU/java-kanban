@@ -8,25 +8,24 @@ import java.util.List;
 import java.util.Map;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-
+    //private FileBackedTasksManager loadedFromFile;
     private File file;
-    public FileBackedTasksManager(File file) {
-       this.file = file;
-    }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         File file = new File("storage.csv");
-        FileBackedTasksManager loadedFromFile = loadFromFile(file);
+        TaskManager fileManager = Managers.getFileBackedManager();
+        fileManager = loadFromFile(file);
 
-         if (loadedFromFile != null) {
-             loadedFromFile.getTaskById(3);
-             loadedFromFile.dellTaskById(3);
-             loadedFromFile.getHistory().toString();
-             loadedFromFile.getTaskById(6);
-             loadedFromFile.dellTaskById(6);
-             loadedFromFile.getTaskById(4);
-             loadedFromFile.getTaskById(2);
+
+        if (fileManager != null) {
+            fileManager.getTaskById(3);
+            fileManager.getHistory().toString();
+            fileManager.getTaskById(6);
+            fileManager.dellTaskById(6);
+            fileManager.getTaskById(4);
+            fileManager.getTaskById(2);
         }
+
     }
 
     private void save() throws ManagerSaveException {             // сохранение изменений в файл
@@ -41,7 +40,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             tmpStorage.put(value.getId(), value);
         }
 
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("storage.csv")) ) {  //OUT
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("storageTest.csv")) ) {  //OUT
             bw.write("id,type,name,status,description,epic");
             bw.newLine();
             for (Task value : tmpStorage.values()) {
@@ -58,9 +57,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     static String historyToString(HistoryManager manager) {
         StringBuilder builder = new StringBuilder();
-        for (Task task : manager.getHistory()  ) {
+        int count = 0;
+        for (Task task : manager.getHistory()) {
             builder.append(task.getId());
-            builder.append(",");
+            count++;
+            if (count < manager.getHistory().size()) {              // проверяем нужно ли добавлять ","
+                builder.append(",");
+            }
         }
         return builder.toString();
     }
@@ -73,7 +76,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
 // =============================== ЗАГРАЗКА ИЗ ФАЙЛА =====================================
     static FileBackedTasksManager loadFromFile(File file) {
-        FileBackedTasksManager loadedFromFile = new FileBackedTasksManager(file);
+
         List<String> tmp = new ArrayList<>();
         String isHistory = "";
         try (FileReader reader = new FileReader(file); BufferedReader br = new BufferedReader(reader)) {
@@ -88,8 +91,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         } catch (IOException e) {
             System.out.println("Произошла ошибка во время чтения файла.");
         }
+        FileBackedTasksManager loadedFromFile = null;
         for (int i = 1; i < tmp.size(); i++) {
-            if ((loadedFromFile != null)) {
+           if (tmp != null) {
                 if (!tmp.get(i).isBlank() && !tmp.get(i).contains("It is history:"))  {
                     String[] tmpArray = tmp.get(i).split(",");
                     switch (Type.valueOf(tmpArray[1]) ) {

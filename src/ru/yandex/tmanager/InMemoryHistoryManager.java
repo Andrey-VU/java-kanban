@@ -2,6 +2,7 @@ package ru.yandex.tmanager;
 import ru.yandex.tasks.Task;
 import java.util.*;
 
+
 public class InMemoryHistoryManager implements HistoryManager {
     Map<Integer, Node<Task>> historyOfView = new HashMap<>();  // для хранения истории просмотров
     private Node<Task> head;       // Указатель на первый элемент списка. Он же first
@@ -15,17 +16,15 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (oldTail == null)
             head = newNode;
         else
-            oldTail.prev = newNode;
+            oldTail.next = newNode;   // Здесь нашёл ошибку. Было oldTail.prev = newNode
         size++;
-        if (task != null) {
-            historyOfView.put(task.getId(), newNode);
-        }
+        historyOfView.put(task.getId(), newNode);
     }
 
     public void removeNode(Node<Task> node) {
-        if (historyOfView.keySet().contains(node.item.getId())) {
-            Node<Task> prevNode = node.prev;
-            Node<Task> nextNode = node.next;
+            if (historyOfView.keySet().contains(node.item.getId()) && node != null) {
+            Node<Task> prevNode = node.equals(head) ? head = null : node.prev;
+            Node<Task> nextNode = node.equals(tail) ? tail = null : node.next;
             historyOfView.remove(node.item.getId());
             if (prevNode != null) {
                 prevNode.next = nextNode;
@@ -40,18 +39,14 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public ArrayList<Task> getHistory() {
         List<Task> rangeOfView = new ArrayList<Task>();
-        Node<Task> tmpNode = head;
-        rangeOfView.add(tmpNode.item);
-        for (int i = 0; i < size; i++){
-            if (tmpNode.next != null){
-                tmpNode = tmpNode.next;
+        if (head!= null) {
+            Node<Task> tmpNode = head;
+            rangeOfView.add(tmpNode.item);
+            while (tmpNode.next != null) {
                 rangeOfView.add(tmpNode.item);
+                tmpNode = tmpNode.next;
             }
         }
-       // while (tmpNode.next != null) {
-         //   rangeOfView.add(tmpNode.item);
-        //    tmpNode = tmpNode.next;
-         //   }
         return (ArrayList<Task>) rangeOfView;
     }
 

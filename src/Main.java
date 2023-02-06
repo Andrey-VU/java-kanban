@@ -1,18 +1,17 @@
 import ru.yandex.exceptions.ManagerSaveException;
-import ru.yandex.tmanager.HistoryManager;
-import ru.yandex.tmanager.InMemoryTaskManager;
 import ru.yandex.tasks.Epic;
 import ru.yandex.tasks.Subtask;
 import ru.yandex.tasks.Task;
 import ru.yandex.tasks.Status;
 import ru.yandex.tmanager.Managers;
+import ru.yandex.tmanager.TaskManager;
 
 import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException, ManagerSaveException {
-        InMemoryTaskManager manager = new InMemoryTaskManager();
-        HistoryManager historyManager = Managers.getDefaultHistory();
+        TaskManager manager = Managers.getDefault();
+        //HistoryManager historyManager = Managers.getDefaultHistory();
         System.out.println("Поехали!");
 
         //Создайте 2 задачи, один эпик с 2 подзадачами, а другой эпик с 1 подзадачей
@@ -103,7 +102,7 @@ public class Main {
    }
 
 
-    public static void printIdAndStatus(InMemoryTaskManager manager, Task taskTest2, Epic epicTest1, Subtask subtaskTest1,
+    public static void printIdAndStatus(TaskManager manager, Task taskTest2, Epic epicTest1, Subtask subtaskTest1,
                                         Epic epicTest2, Subtask subtaskTest2, Subtask subtaskTest3, Task taskTest1) {
         System.out.println(" ========= ПРОСТЫЕ ЗАДАЧИ ======================");
         System.out.println("статус taskTest1 = " + manager.getTaskById(taskTest1.getId()).getStatus());
