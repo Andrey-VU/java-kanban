@@ -75,7 +75,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
 // =============================== ЗАГРАЗКА ИЗ ФАЙЛА =====================================
     static FileBackedTasksManager loadFromFile(File file) throws IOException {
-        TaskManager loadedFromFile = new FileBackedTasksManager();
+        TaskManager loadedFromFile = Managers.getFileBackedManager();
         List<String> tmp = new ArrayList<>();
         String isHistory = "";
         try (FileReader reader = new FileReader(file); BufferedReader br = new BufferedReader(reader)) {
