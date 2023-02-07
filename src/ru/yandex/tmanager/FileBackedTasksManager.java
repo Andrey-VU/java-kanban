@@ -8,24 +8,23 @@ import java.util.List;
 import java.util.Map;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    //private FileBackedTasksManager loadedFromFile;
     private File file;
 
     public static void main(String[] args) throws IOException {
         File file = new File("storage.csv");
-        TaskManager fileManager = Managers.getFileBackedManager();
-        fileManager = loadFromFile(file);
+        TaskManager newManager = Managers.getFileBackedManager();
+        TaskManager recoveredFromFile = loadFromFile(file);
 
-
-        if (fileManager != null) {
-            fileManager.getTaskById(3);
-            fileManager.getHistory().toString();
-            fileManager.getTaskById(6);
-            fileManager.dellTaskById(6);
-            fileManager.getTaskById(4);
-            fileManager.getTaskById(2);
+        if (recoveredFromFile != null) {
+            recoveredFromFile.getTaskById(3);
+            recoveredFromFile.getHistory().toString();
+            recoveredFromFile.getTaskById(6);
+            recoveredFromFile.dellTaskById(6);
+            recoveredFromFile.getTaskById(4);
+            recoveredFromFile.getTaskById(2);
+            recoveredFromFile.getTaskById(7);
+            recoveredFromFile.getTaskById(1);
         }
-
     }
 
     private void save() throws ManagerSaveException {             // сохранение изменений в файл
@@ -40,7 +39,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             tmpStorage.put(value.getId(), value);
         }
 
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("storageTest.csv")) ) {  //OUT
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("storage.csv")) ) {  //OUT
             bw.write("id,type,name,status,description,epic");
             bw.newLine();
             for (Task value : tmpStorage.values()) {
@@ -75,8 +74,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
 
 // =============================== ЗАГРАЗКА ИЗ ФАЙЛА =====================================
-    static FileBackedTasksManager loadFromFile(File file) {
-
+    static FileBackedTasksManager loadFromFile(File file) throws IOException {
+        TaskManager loadedFromFile = new FileBackedTasksManager();
         List<String> tmp = new ArrayList<>();
         String isHistory = "";
         try (FileReader reader = new FileReader(file); BufferedReader br = new BufferedReader(reader)) {
@@ -91,7 +90,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         } catch (IOException e) {
             System.out.println("Произошла ошибка во время чтения файла.");
         }
-        FileBackedTasksManager loadedFromFile = null;
+
         for (int i = 1; i < tmp.size(); i++) {
            if (tmp != null) {
                 if (!tmp.get(i).isBlank() && !tmp.get(i).contains("It is history:"))  {
@@ -99,21 +98,22 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     switch (Type.valueOf(tmpArray[1]) ) {
                         case TASK:
                             Task tmpTask = fromString(tmp.get(i));
-                            if (tmpTask != null) {
-                                loadedFromFile.getTaskTasks().put(tmpTask.getId(), tmpTask);
-                            }
+                            //Managers.getFileBackedManager().makeNewTask(tmpTask);
+                            loadedFromFile.makeNewTask(tmpTask);
+         //                   loadedFromFile.getHistory().add(tmpTask.getId(), tmpTask);
+                            // НУЖНО ЛИ ПЕРЕОПРЕДЕЛИТЬ МЕТОД makeNewTask ? Ведь, мы здесь ид заводим с листа,
+                            // а не генерируем?
+
                             break;
                         case EPIC:
                             Epic tmpEpic = (Epic) fromString(tmp.get(i));
-                            if (tmpEpic != null) {
-                                loadedFromFile.getEpicTasks().put(tmpEpic.getId(), tmpEpic);
-                            }
+                          //  Managers.getFileBackedManager().makeNewEpic(tmpEpic);
+                            loadedFromFile.makeNewEpic(tmpEpic);
                             break;
                         case SUBTASK:
                             Subtask tmpSubtask = (Subtask) fromString(tmp.get(i));
-                            if (tmpSubtask != null) {
-                                loadedFromFile.getSubtaskTasks().put(tmpSubtask.getId(), tmpSubtask);
-                            }
+                            //Managers.getFileBackedManager().makeNewSubtask(tmpSubtask);
+                            loadedFromFile.makeNewTask(tmpSubtask);
                             break;
                     }
                 } else if (tmp.get(i).isBlank()) {
@@ -121,18 +121,20 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 } else {
                     String historyIdsFromTask = tmp.get(i).substring(isHistory.length());
                     for (Integer id : historyFromString(historyIdsFromTask)) {
-                        if (loadedFromFile.getTaskTasks().keySet().contains(id)) {
-                            loadedFromFile.getHistoryManager().add(loadedFromFile.getTaskById(id));
-                        } else if (loadedFromFile.getEpicTasks().keySet().contains(id)) {
-                            loadedFromFile.getHistoryManager().add(loadedFromFile.getEpicById(id));
-                        } else {
-                            loadedFromFile.getHistoryManager().add(loadedFromFile.getSubTaskById(id));
+                        if (Managers.getFileBackedManager().getTaskById(id) != null &&
+                                Managers.getFileBackedManager().getTaskById(id).getType().equals(Type.TASK)) {
+                                Managers.getDefaultHistory().add(Managers.getFileBackedManager().getTaskById(id));
+                        } else if (Managers.getFileBackedManager().getEpicById(id) != null &&
+                                Managers.getFileBackedManager().getEpicById(id).getType().equals(Type.EPIC)) {
+                                Managers.getDefaultHistory().add(Managers.getFileBackedManager().getEpicById(id));
+                        } else if (Managers.getFileBackedManager().getSubTaskById(id) != null) {
+                            Managers.getDefaultHistory().add(Managers.getFileBackedManager().getSubTaskById(id));
                         }
                     }
                 }
             }
         }
-        return loadedFromFile;
+        return (FileBackedTasksManager) loadedFromFile;
     }
 
     static Task fromString(String s) {         // создание задачи из строки

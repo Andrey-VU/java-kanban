@@ -29,7 +29,6 @@ public class InMemoryTaskManager implements TaskManager {
     public void makeNewEpic(Epic epic) {              // новая Эпик задача
         if (epic != null) {
         Epic newEpic = epic;
-
             int uniqueEpicId = makeID();
             newEpic.setId(uniqueEpicId);
             epicTasks.put(uniqueEpicId, newEpic);         // сохранили объект с описанием ru.yandex.tasks.Epic задачи
