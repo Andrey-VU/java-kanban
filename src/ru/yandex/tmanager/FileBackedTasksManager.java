@@ -12,18 +12,18 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public static void main(String[] args) throws IOException {
         File file = new File("storage.csv");
-        TaskManager newManager = Managers.getFileBackedManager();
+        // TaskManager newManager = Managers.getFileBackedManager();
         TaskManager recoveredFromFile = loadFromFile(file);
 
         if (recoveredFromFile != null) {
-            recoveredFromFile.getTaskById(3);
-            recoveredFromFile.getHistory().toString();
-            recoveredFromFile.getTaskById(6);
+            recoveredFromFile.getTaskById(3);    // Не понимаю почему мы здесь вызываем всё одним методом
+            recoveredFromFile.getTaskById(6);    // getTaskById какой бы тип задач не лежал в хранилище
             recoveredFromFile.dellTaskById(6);
             recoveredFromFile.getTaskById(4);
             recoveredFromFile.getTaskById(2);
             recoveredFromFile.getTaskById(7);
             recoveredFromFile.getTaskById(1);
+            recoveredFromFile.getTaskById(5);
         }
     }
 
@@ -73,7 +73,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
 
-// =============================== ЗАГРАЗКА ИЗ ФАЙЛА =====================================
+    // =============================== ЗАГРАЗКА ИЗ ФАЙЛА =====================================
     static FileBackedTasksManager loadFromFile(File file) throws IOException {
         TaskManager loadedFromFile = Managers.getFileBackedManager();
         List<String> tmp = new ArrayList<>();
@@ -92,27 +92,20 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
 
         for (int i = 1; i < tmp.size(); i++) {
-           if (tmp != null) {
+            if (tmp != null) {
                 if (!tmp.get(i).isBlank() && !tmp.get(i).contains("It is history:"))  {
                     String[] tmpArray = tmp.get(i).split(",");
-                    switch (Type.valueOf(tmpArray[1]) ) {
+                    switch (Type.valueOf(tmpArray[1])) {
                         case TASK:
                             Task tmpTask = fromString(tmp.get(i));
-                            //Managers.getFileBackedManager().makeNewTask(tmpTask);
                             loadedFromFile.makeNewTask(tmpTask);
-         //                   loadedFromFile.getHistory().add(tmpTask.getId(), tmpTask);
-                            // НУЖНО ЛИ ПЕРЕОПРЕДЕЛИТЬ МЕТОД makeNewTask ? Ведь, мы здесь ид заводим с листа,
-                            // а не генерируем?
-
                             break;
                         case EPIC:
                             Epic tmpEpic = (Epic) fromString(tmp.get(i));
-                          //  Managers.getFileBackedManager().makeNewEpic(tmpEpic);
                             loadedFromFile.makeNewEpic(tmpEpic);
                             break;
                         case SUBTASK:
                             Subtask tmpSubtask = (Subtask) fromString(tmp.get(i));
-                            //Managers.getFileBackedManager().makeNewSubtask(tmpSubtask);
                             loadedFromFile.makeNewTask(tmpSubtask);
                             break;
                     }
@@ -121,19 +114,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 } else {
                     String historyIdsFromTask = tmp.get(i).substring(isHistory.length());
                     for (Integer id : historyFromString(historyIdsFromTask)) {
-                        if (Managers.getFileBackedManager().getTaskById(id) != null &&
-                                Managers.getFileBackedManager().getTaskById(id).getType().equals(Type.TASK)) {
-                                Managers.getDefaultHistory().add(Managers.getFileBackedManager().getTaskById(id));
-                        } else if (Managers.getFileBackedManager().getEpicById(id) != null &&
-                                Managers.getFileBackedManager().getEpicById(id).getType().equals(Type.EPIC)) {
-                                Managers.getDefaultHistory().add(Managers.getFileBackedManager().getEpicById(id));
-                        } else if (Managers.getFileBackedManager().getSubTaskById(id) != null) {
-                            Managers.getDefaultHistory().add(Managers.getFileBackedManager().getSubTaskById(id));
+                                loadedFromFile.getTaskById(id);
+                                loadedFromFile.getEpicById(id);
+                                loadedFromFile.getSubTaskById(id);
                         }
                     }
                 }
             }
-        }
         return (FileBackedTasksManager) loadedFromFile;
     }
 
@@ -175,7 +162,23 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     @Override
     public Epic getEpicById(int idForSearch) {
-        return super.getEpicById(idForSearch);
+        Epic tmpEpic = super.getEpicById(idForSearch);
+        save();
+        return tmpEpic;
+    }
+
+    @Override
+    public Subtask getSubTaskById(int idForSearch) {
+        Subtask tmpSubtask = super.getSubTaskById(idForSearch);
+        save();
+        return tmpSubtask;
+    }
+
+    @Override
+    public Task getTaskById(int idForSearch) {
+        Task tmpTask = super.getTaskById(idForSearch);
+        save();
+        return tmpTask;
     }
 
     @Override
@@ -207,11 +210,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public Subtask getSubTaskById(int idForSearch) {
-        return super.getSubTaskById(idForSearch);
-    }
-
-    @Override
     public void updateSubtask(int idForUpdate, Subtask subtask)  {
         super.updateSubtask(idForUpdate, subtask);
         save();
@@ -226,13 +224,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public void makeNewTask(Task task)  {
         super.makeNewTask(task);
         save();
-    }
-
-    @Override
-    public Task getTaskById(int idForSearch) {
-        Task tmpTask = super.getTaskById(idForSearch);
-        save();
-        return tmpTask;
     }
 
     @Override

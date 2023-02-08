@@ -16,7 +16,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (oldTail == null)
             head = newNode;
         else
-            oldTail.next = newNode;   // Здесь нашёл ошибку. Было oldTail.prev = newNode
+            oldTail.next = newNode;
         size++;
         historyOfView.put(task.getId(), newNode);
     }
@@ -41,11 +41,11 @@ public class InMemoryHistoryManager implements HistoryManager {
         List<Task> rangeOfView = new ArrayList<Task>();
         if (head!= null) {
             Node<Task> tmpNode = head;
-            rangeOfView.add(tmpNode.item);
             while (tmpNode.next != null) {
                 rangeOfView.add(tmpNode.item);
                 tmpNode = tmpNode.next;
             }
+            rangeOfView.add(tmpNode.item);
         }
         return (ArrayList<Task>) rangeOfView;
     }
