@@ -22,7 +22,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             recoveredFromFile.getTaskById(6);
             recoveredFromFile.dellTaskById(6);
             recoveredFromFile.getSubTaskById(4);
-            recoveredFromFile.getEpicById(2);   // если запрашивать getEpicById всё ломается
+            recoveredFromFile.getEpicById(2);
             recoveredFromFile.getTaskById(7);
             recoveredFromFile.getTaskById(1);
             recoveredFromFile.getSubTaskById(5);
@@ -41,7 +41,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             tmpStorage.put(value.getId(), value);
         }
 
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("storageNEW.csv")) ) {  //OUT
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("storage.csv")) ) {  //OUT
             bw.write("id,type,name,status,description,epic");
             bw.newLine();
             for (Task value : tmpStorage.values()) {
