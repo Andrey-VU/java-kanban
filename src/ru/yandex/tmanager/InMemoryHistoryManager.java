@@ -2,7 +2,6 @@ package ru.yandex.tmanager;
 import ru.yandex.tasks.Task;
 import java.util.*;
 
-
 public class InMemoryHistoryManager implements HistoryManager {
     Map<Integer, Node<Task>> historyOfView = new HashMap<>();  // для хранения истории просмотров
     private Node<Task> head;       // Указатель на первый элемент списка. Он же first
@@ -23,7 +22,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     public void removeNode(Node<Task> node) {
             if (historyOfView.keySet().contains(node.item.getId()) && node != null) {
-            Node<Task> prevNode = node.equals(head) ? head = null : node.prev;
+            Node<Task> prevNode = node.equals(head) ? head = node.next : node.prev;
             Node<Task> nextNode = node.equals(tail) ? tail = null : node.next;
             historyOfView.remove(node.item.getId());
             if (prevNode != null) {
@@ -39,13 +38,10 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public ArrayList<Task> getHistory() {
         List<Task> rangeOfView = new ArrayList<Task>();
-        if (head!= null) {
-            Node<Task> tmpNode = head;
-            while (tmpNode.next != null) {
-                rangeOfView.add(tmpNode.item);
-                tmpNode = tmpNode.next;
-            }
+        Node<Task> tmpNode = head;
+        while (tmpNode != null) {
             rangeOfView.add(tmpNode.item);
+            tmpNode = tmpNode.next;
         }
         return (ArrayList<Task>) rangeOfView;
     }

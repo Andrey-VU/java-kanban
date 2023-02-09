@@ -16,14 +16,16 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         TaskManager recoveredFromFile = loadFromFile(file);
 
         if (recoveredFromFile != null) {
-            recoveredFromFile.getTaskById(3);    // Не понимаю почему мы здесь вызываем всё одним методом
-            recoveredFromFile.getTaskById(6);    // getTaskById какой бы тип задач не лежал в хранилище
+            // recoveredFromFile.dellThemAll();
+            recoveredFromFile.getSubTaskById(3);
+            recoveredFromFile.dellTaskById(3);
+            recoveredFromFile.getTaskById(6);
             recoveredFromFile.dellTaskById(6);
-            recoveredFromFile.getTaskById(4);
-            recoveredFromFile.getTaskById(2);
+            recoveredFromFile.getSubTaskById(4);
+            //  recoveredFromFile.getEpicById(2);   // если запрашивать getEpicById всё ломается
             recoveredFromFile.getTaskById(7);
             recoveredFromFile.getTaskById(1);
-            recoveredFromFile.getTaskById(5);
+            recoveredFromFile.getSubTaskById(5);
         }
     }
 
@@ -106,7 +108,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                             break;
                         case SUBTASK:
                             Subtask tmpSubtask = (Subtask) fromString(tmp.get(i));
-                            loadedFromFile.makeNewTask(tmpSubtask);
+                            loadedFromFile.makeNewSubtask(tmpSubtask);
                             break;
                     }
                 } else if (tmp.get(i).isBlank()) {
@@ -155,12 +157,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     // ========================================= ПЕРЕОПРЕДЕЛЁННЫЕ МЕТОДЫ =============================
     @Override
-    public void makeNewEpic(Epic epic) {
-        super.makeNewEpic(epic);
-        save();
-    }
-
-    @Override
     public Epic getEpicById(int idForSearch) {
         Epic tmpEpic = super.getEpicById(idForSearch);
         save();
@@ -204,8 +200,20 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
+    public void makeNewTask(Task task)  {
+        super.makeNewTask(task);
+        save();
+    }
+
+    @Override
     public void makeNewSubtask(Subtask subtask)  {
         super.makeNewSubtask(subtask);
+        save();
+    }
+
+    @Override
+    public void makeNewEpic(Epic epic) {
+        super.makeNewEpic(epic);
         save();
     }
 
@@ -218,12 +226,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public void statusChecker(Epic newEpic) {
         super.statusChecker(newEpic);
-    }
-
-    @Override
-    public void makeNewTask(Task task)  {
-        super.makeNewTask(task);
-        save();
     }
 
     @Override
