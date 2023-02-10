@@ -38,6 +38,7 @@ public class InMemoryHistoryManager implements HistoryManager {
                 } else {                                               // нода самая распоследняя
                     node.prev.next = null;
                     node = null;
+                    tail = null;
                 }
 
             size--;
