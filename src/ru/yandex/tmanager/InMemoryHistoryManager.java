@@ -22,15 +22,24 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     public void removeNode(Node<Task> node) {
             if (historyOfView.keySet().contains(node.item.getId()) && node != null) {
-            Node<Task> prevNode = node.equals(head) ? head = node.next : node.prev;
-            Node<Task> nextNode = node.equals(tail) ? tail = null : node.next;
-            historyOfView.remove(node.item.getId());
-            if (prevNode != null) {
-                prevNode.next = nextNode;
-            }
-            if (nextNode != null) {
-                nextNode.prev = prevNode;
-            }
+
+                if (head.equals(node) && tail.equals(node)) {                         // нода первая и последняя
+                    node = null;
+                    head = null;
+                    tail = null;
+                } else if (head.equals(node)) {                       // нода первая, но не последняя
+                    head = node.next;
+                    head.prev = null;
+                } else if (!tail.equals(node)) {                      // нода не первая и не последняя
+                    Node <Task> oldNodePrev = node.prev;
+                    Node <Task> oldNodeNext = node.next;
+                    oldNodePrev.next = oldNodeNext;
+                    oldNodeNext.prev = oldNodePrev;
+                } else {                                               // нода самая распоследняя
+                    node.prev.next = null;
+                    node = null;
+                }
+
             size--;
         }
     }
@@ -57,9 +66,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        if (historyOfView.keySet().contains(id)) {
-            removeNode(historyOfView.remove(id));
-        }
+        removeNode(historyOfView.remove(id));
     }
 
     private static class Node<Task> {
