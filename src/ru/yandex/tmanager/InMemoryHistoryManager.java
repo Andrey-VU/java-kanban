@@ -22,7 +22,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     public void removeNode(Node<Task> node) {
             if (historyOfView.keySet().contains(node.item.getId()) && node != null) {
-
+                int idForDell = node.item.getId();
                 if (head.equals(node) && tail.equals(node)) {                         // нода первая и последняя
                     node = null;
                     head = null;
@@ -37,10 +37,11 @@ public class InMemoryHistoryManager implements HistoryManager {
                     oldNodeNext.prev = oldNodePrev;
                 } else {                                               // нода самая распоследняя
                     node.prev.next = null;
+                    tail = node.prev;
                     node = null;
-                    tail = null;
-                }
 
+                }
+                historyOfView.remove(idForDell);
             size--;
         }
     }
@@ -67,7 +68,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        removeNode(historyOfView.remove(id));
+        removeNode(historyOfView.get(id));
     }
 
     private static class Node<Task> {
