@@ -8,12 +8,13 @@ import java.util.List;
 import java.util.Map;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    private File file;
+    public static File fileIn;
+    public static File fileOut;
 
     public static void main(String[] args) throws IOException {
-        File file = new File("storage.csv");
-        // TaskManager newManager = Managers.getFileBackedManager();
-        TaskManager recoveredFromFile = loadFromFile(file);
+        fileIn = new File("storage.csv");
+        fileOut = new File("storage.csv");
+        TaskManager recoveredFromFile = loadFromFile(fileIn);
 
         if (recoveredFromFile != null) {
             // recoveredFromFile.dellThemAll();
@@ -30,6 +31,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void save() throws ManagerSaveException {             // сохранение изменений в файл
+        File fileForSave = fileOut;
         Map<Integer, Task> tmpStorage = new HashMap<>();
         for (Task value :  getTaskTasks().values()) {
             tmpStorage.put(value.getId(), value);
@@ -41,7 +43,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             tmpStorage.put(value.getId(), value);
         }
 
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("storage.csv")) ) {  //OUT
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileForSave)) ) {  //OUT
             bw.write("id,type,name,status,description,epic");
             bw.newLine();
             for (Task value : tmpStorage.values()) {
@@ -76,14 +78,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
 
     // =============================== ЗАГРАЗКА ИЗ ФАЙЛА =====================================
-    static FileBackedTasksManager loadFromFile(File file) throws IOException {
+    public static FileBackedTasksManager loadFromFile(File file) throws IOException {
         TaskManager loadedFromFile = Managers.getFileBackedManager();
         List<String> tmp = new ArrayList<>();
         String isHistory = "";
         try (FileReader reader = new FileReader(file); BufferedReader br = new BufferedReader(reader)) {
             while (br.ready()) {
                 String line = isHistory + br.readLine();
-                if (!line.isBlank()) {
+                if (!line.isBlank() && br.readLine() != null) {
                     tmp.add(line);
                 } else {
                     isHistory = "It is history:";
@@ -114,6 +116,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 } else if (tmp.get(i).isBlank()) {
                     continue;
                 } else {
+
                     String historyIdsFromTask = tmp.get(i).substring(isHistory.length());
                     for (Integer id : historyFromString(historyIdsFromTask)) {
                                 loadedFromFile.getTaskById(id);
@@ -151,7 +154,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             for (String s : value.split(",")) {
                 listOfId.add(Integer.parseInt(s));
             }
-        } else {listOfId.add(Integer.parseInt(value));}
+        } else if (value.length() == 0){
+            return null;
+        }
+        else {listOfId.add(Integer.parseInt(value));}
         return listOfId;
     }
 
@@ -190,7 +196,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     @Override
     public ArrayList<Subtask> getListSubtasksOfEpic(Epic epic) {
-        return super.getListSubtasksOfEpic(epic);
+        if (super.getListSubtasksOfEpic(epic) != null) {
+            return super.getListSubtasksOfEpic(epic);
+        }
+        return null;
     }
 
     @Override

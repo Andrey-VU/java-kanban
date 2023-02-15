@@ -22,6 +22,9 @@ public class Epic extends Task {
         mySubtasks.add(newSubtask);
     }
     public ArrayList<Subtask> getMySubtasks() {
-        return mySubtasks;
+        if (!mySubtasks.isEmpty()) {
+            return mySubtasks;
+        }
+        return null;
     }
 }

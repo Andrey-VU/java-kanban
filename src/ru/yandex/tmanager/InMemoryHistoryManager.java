@@ -54,7 +54,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             rangeOfView.add(tmpNode.item);
             tmpNode = tmpNode.next;
         }
-        return (ArrayList<Task>) rangeOfView;
+        return rangeOfView == null ? null : (ArrayList<Task>) rangeOfView;
     }
 
     public void add(Task task) {
@@ -68,7 +68,9 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        removeNode(historyOfView.get(id));
+        if (historyOfView.get(id) != null) {
+            removeNode(historyOfView.get(id));
+        }
     }
 
     private static class Node<Task> {
