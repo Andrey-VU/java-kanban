@@ -61,11 +61,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     static String historyToString(HistoryManager manager) {
         StringBuilder builder = new StringBuilder();
         int count = 0;
-        for (Task task : manager.getHistory()) {
-            builder.append(task.getId());
-            count++;
-            if (count < manager.getHistory().size()) {              // проверяем нужно ли добавлять ","
-                builder.append(",");
+        if (manager.getHistory() != null) {
+            for (Task task : manager.getHistory()) {
+                builder.append(task.getId());
+                count++;
+                if (count < manager.getHistory().size()) {              // проверяем нужно ли добавлять ","
+                    builder.append(",");
+                }
             }
         }
         return builder.toString();
@@ -85,7 +87,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         try (FileReader reader = new FileReader(file); BufferedReader br = new BufferedReader(reader)) {
             while (br.ready()) {
                 String line = isHistory + br.readLine();
-                if (!line.isBlank() && br.readLine() != null) {
+                if (!line.isBlank()) {
                     tmp.add(line);
                 } else {
                     isHistory = "It is history:";

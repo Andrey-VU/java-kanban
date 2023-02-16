@@ -9,15 +9,19 @@ public class InMemoryHistoryManager implements HistoryManager {
     private int size = 0;          // Размер хранилища
 
     public void linkLast(Task task) {
-        final Node<Task> oldTail = tail;
-        final Node<Task> newNode = new Node<>(oldTail, task, null);
-        tail = newNode;
-        if (oldTail == null)
-            head = newNode;
-        else
-            oldTail.next = newNode;
-        size++;
-        historyOfView.put(task.getId(), newNode);
+        if (historyOfView.containsKey(task.getId())) {
+            remove(task.getId());
+        }
+            final Node<Task> oldTail = tail;
+            final Node<Task> newNode = new Node<>(oldTail, task, null);
+            tail = newNode;
+            if (oldTail == null)
+                head = newNode;
+            else
+                oldTail.next = newNode;
+            size++;
+            historyOfView.put(task.getId(), newNode);
+
     }
 
     public void removeNode(Node<Task> node) {
@@ -54,7 +58,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             rangeOfView.add(tmpNode.item);
             tmpNode = tmpNode.next;
         }
-        return rangeOfView == null ? null : (ArrayList<Task>) rangeOfView;
+        return rangeOfView.isEmpty() ? null : (ArrayList<Task>) rangeOfView;
     }
 
     public void add(Task task) {
