@@ -35,9 +35,9 @@ class EpicTest {
     @Test           // Все подзадачи со статусом NEW
     public void shouldCalculateEpicStatusWithNewSubtasks() throws IOException  {
         Subtask subtaskTest1 = new Subtask("Subtask name1", "Subtask description1",
-                0, Status.NEW, epicTest.getId());
+                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         Subtask subtaskTest2 = new Subtask("Subtask name2", "Subtask description2",
-                0, Status.NEW, epicTest.getId());
+                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         manager.makeNewSubtask(subtaskTest1);
         manager.makeNewSubtask(subtaskTest2);
         manager.getEpicById(epicTest.getId()).setMySubtask(subtaskTest1);
@@ -50,9 +50,9 @@ class EpicTest {
     @Test           // Все подзадачи со статусом DONE
     public void shouldCalculateEpicStatusWithDoneSubtasks() throws IOException  {
         Subtask subtaskTest1 = new Subtask("Subtask name1", "Subtask description1",
-                0, Status.DONE, epicTest.getId());
+                0, Status.DONE, epicTest.getId(), "01.01.2000--12:00", 3600);
         Subtask subtaskTest2 = new Subtask("Subtask name2", "Subtask description2",
-                0, Status.DONE, epicTest.getId());
+                0, Status.DONE, epicTest.getId(), "01.01.2000--12:00", 3600);
         manager.makeNewSubtask(subtaskTest1);
         manager.makeNewSubtask(subtaskTest2);
         Status newStatus = manager.getEpicById(epicTest.getId()).getStatus();
@@ -63,9 +63,9 @@ class EpicTest {
     @Test           // Подзадачи со статусами NEW и DONE
     public void shouldCalculateEpicStatusWithNewAndDoneSubtasks() throws IOException  {
         Subtask subtaskTest1 = new Subtask("Subtask name1", "Subtask description1",
-                0, Status.NEW, epicTest.getId());
+                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         Subtask subtaskTest2 = new Subtask("Subtask name2", "Subtask description2",
-                0, Status.DONE, epicTest.getId());
+                0, Status.DONE, epicTest.getId(), "01.01.2000--12:00", 3600);
         manager.makeNewSubtask(subtaskTest1);
         manager.makeNewSubtask(subtaskTest2);
         manager.getEpicById(epicTest.getId()).setMySubtask(subtaskTest1);
@@ -78,9 +78,9 @@ class EpicTest {
     @Test           // Подзадачи со статусами NEW и DONE
     public void shouldCalculateEpicStatusWithInProgressSubtasks() throws IOException  {
         Subtask subtaskTest1 = new Subtask("Subtask name1", "Subtask description1",
-                0, Status.IN_PROGRESS, epicTest.getId());
+                0, Status.IN_PROGRESS, epicTest.getId(), "01.01.2000--12:00", 3600);
         Subtask subtaskTest2 = new Subtask("Subtask name2", "Subtask description2",
-                0, Status.IN_PROGRESS, epicTest.getId());
+                0, Status.IN_PROGRESS, epicTest.getId(), "01.01.2000--12:00", 3600);
         manager.makeNewSubtask(subtaskTest1);
         manager.makeNewSubtask(subtaskTest2);
         manager.getEpicById(epicTest.getId()).setMySubtask(subtaskTest1);

@@ -35,14 +35,15 @@ class FileBackedTasksManagerTest extends TaskManagerTest {
         FileBackedTasksManager.fileOut = new File("storageTestOut1.csv");
         recoveredFromFile = FileBackedTasksManager.loadFromFile(FileBackedTasksManager.fileIn);
 
-        testTaskZ = new Task("Test_Task_name","Test_Task_description", 0, Status.NEW);
+        testTaskZ = new Task("Test_Task_name","Test_Task_description", 0, Status.NEW,
+                "01.01.2000--12:00", 3600);
         testEpicZ = new Epic("Test_Epic_name","Test_Epic_description",0,Status.NEW);
 
         inMemoryManager.makeNewTask(testTaskZ);
         inMemoryManager.makeNewEpic(testEpicZ);
 
         testSubtaskZ = new Subtask("Test_Subtask_name","Test_Subtask_description",
-                0, Status.NEW, testEpicZ.getId());
+                0, Status.NEW, testEpicZ.getId(), "01.01.2000--12:00", 3600);
         inMemoryManager.makeNewSubtask(testSubtaskZ);
 
         historyForTest = new ArrayList<>();
@@ -132,9 +133,6 @@ class FileBackedTasksManagerTest extends TaskManagerTest {
 
         newRecoveredFromFile = FileBackedTasksManager.loadFromFile(FileBackedTasksManager.fileIn);
 
-//        final ArrayList<Task> newHistoryFromFile = newRecoveredFromFile.getHistory();
-  //      assertNull(newHistoryFromFile, "Ожидается пустая история, но что-то идёт не так");
-
         Task taskFromMemory = inMemoryManager.getTaskById(1);
         Epic epicFromMemory = inMemoryManager.getEpicById(2);
         Subtask subtaskFromMemory = inMemoryManager.getSubTaskById(3);
@@ -149,13 +147,4 @@ class FileBackedTasksManagerTest extends TaskManagerTest {
         assertEquals(subtaskFromMemory, subtaskFromFile, "SubTask без истории не создан или создан с ошибками");
 
     }
-
-    /*
-    Дополнительно для FileBackedTasksManager — проверка работы по сохранению и восстановлению состояния. Граничные условия:
- a. Пустой список задач.
- b. Эпик без подзадач.
- c. Пустой список истории.
-     */
-
-
 }

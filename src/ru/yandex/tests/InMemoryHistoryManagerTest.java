@@ -28,12 +28,14 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void isHistoryManagerEmpty() {
-        assertNull(historyManager.getHistory(),"Ошибка! Новый менеджер истории не пустой");
+        assertNull(historyManager.getHistory(),"Ошибка! " +
+                "Новый менеджер истории не пустой");
     }
 
     @Test
     void shouldAddLastItemOneTime() {
-        Task historyTask = new Task("name HistoryTask","description HistoryTask",1, Status.NEW);
+        Task historyTask = new Task("name HistoryTask","description HistoryTask",1, Status.NEW,
+                "01.01.2000--12:00", 3600);
         historyManager.linkLast(historyTask);
         assertEquals(true,historyManager.getHistory().contains(historyTask),
                 "Task не добавлен в историю");
@@ -43,7 +45,8 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void shouldGetHistory() {
-        Task historyTask = new Task("name HistoryTask","description HistoryTask",1, Status.NEW);
+        Task historyTask = new Task("name HistoryTask","description HistoryTask",1, Status.NEW,
+                "01.01.2000--12:00", 3600);
         historyManager.linkLast(historyTask);
         assertEquals(true,historyManager.getHistory().contains(historyTask),
                 "История не сформирована, либо содержит ошибки");
@@ -56,17 +59,17 @@ class InMemoryHistoryManagerTest {
     @Test
     void shouldRemove() {
         Task historyTask10 = new Task("name HistoryTask10",
-                "description HistoryTask1",10, Status.NEW);
+                "description HistoryTask1",10, Status.NEW, "01.01.2000--12:00", 3600);
         historyManager.linkLast(historyTask10);
         historyManager.remove(historyTask10.getId());
         assertNull(historyManager.getHistory(), "История не очищена");
 
         Task historyTask1 = new Task("name HistoryTask1",
-                "description HistoryTask1",1, Status.NEW);
+                "description HistoryTask1",1, Status.NEW, "01.01.2000--12:00", 3600);
         Task historyTask2 = new Task("name HistoryTask2",
-                "description HistoryTask2",2, Status.NEW);
+                "description HistoryTask2",2, Status.NEW, "01.01.2000--12:00", 3600);
         Task historyTask3 = new Task("name HistoryTask3",
-                "description HistoryTask3",3, Status.NEW);
+                "description HistoryTask3",3, Status.NEW, "01.01.2000--12:00", 3600);
 
         historyManager.linkLast(historyTask1);
         historyManager.linkLast(historyTask2);

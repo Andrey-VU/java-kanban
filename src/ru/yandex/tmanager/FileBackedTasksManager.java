@@ -2,18 +2,22 @@ package ru.yandex.tmanager;
 import ru.yandex.exceptions.ManagerSaveException;
 import ru.yandex.tasks.*;
 import java.io.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static ru.yandex.tasks.Type.EPIC;
+
 public class FileBackedTasksManager extends InMemoryTaskManager {
     public static File fileIn;
     public static File fileOut;
+    //public DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("dd.MM.yyyy--HH:mm");
 
     public static void main(String[] args) throws IOException {
         fileIn = new File("storage.csv");
-        fileOut = new File("storage.csv");
+        fileOut = new File("storageOUT_TMP.csv");
         TaskManager recoveredFromFile = loadFromFile(fileIn);
 
         if (recoveredFromFile != null) {
@@ -44,9 +48,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileForSave)) ) {  //OUT
-            bw.write("id,type,name,status,description,epic");
+            bw.write("id,type,name,status,description,startTime,duration,epic");
             bw.newLine();
             for (Task value : tmpStorage.values()) {
+
                 bw.write(toStringForFile(value));
                 bw.newLine();
             }
@@ -73,16 +78,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return builder.toString();
     }
 
-    @Override
-    String toStringForFile(Task task) {
-        return super.toStringForFile(task);
-    }
-
-
     // =============================== ЗАГРАЗКА ИЗ ФАЙЛА =====================================
     public static FileBackedTasksManager loadFromFile(File file) throws IOException {
         TaskManager loadedFromFile = Managers.getFileBackedManager();
-        List<String> tmp = new ArrayList<>();
+        List<String> tmp = new ArrayList<>();                // для хранения списка строк из файла
         String isHistory = "";
         try (FileReader reader = new FileReader(file); BufferedReader br = new BufferedReader(reader)) {
             while (br.ready()) {
@@ -100,7 +99,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         for (int i = 1; i < tmp.size(); i++) {
             if (tmp != null) {
                 if (!tmp.get(i).isBlank() && !tmp.get(i).contains("It is history:"))  {
-                    String[] tmpArray = tmp.get(i).split(",");
+                    String[] tmpArray = tmp.get(i).split(",");    // строковый массив после деления строки по ","
                     switch (Type.valueOf(tmpArray[1])) {
                         case TASK:
                             Task tmpTask = fromString(tmp.get(i));
@@ -134,16 +133,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     static Task fromString(String s) {         // создание задачи из строки
         String[] tmpArray = s.split(",");
         for (int i = 0; i < tmpArray.length; i++) {
-            if (tmpArray.length == 5) {
-                if (Type.valueOf(tmpArray[1]).equals("TASK")) {
-                    Task taskFromFile = new Task(tmpArray);
-                    return taskFromFile;
-                } else {
-                    Epic taskFromFile = new Epic(tmpArray);
-                    return taskFromFile;
-                }
-            } else if (tmpArray.length == 6) {
+            if (tmpArray.length == 7) {
+                //if (Type.valueOf(tmpArray[1]).equals("TASK")) {
+                Task taskFromFile = new Task(tmpArray);
+                return taskFromFile;
+            } else if (tmpArray.length == 8) {
                 Subtask taskFromFile = new Subtask(tmpArray);
+                return taskFromFile;
+            } else {
+                Epic taskFromFile = new Epic(Type.EPIC, tmpArray);
                 return taskFromFile;
             }
         }
@@ -163,7 +161,17 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return listOfId;
     }
 
+    String toStringForFile(Task task) {
+        String isStartTimeAndDuration = task.getStartTime() == null ? "" :
+                task.getStartTime().format(task.getFormatter()) + "," + task.getDuration().toMinutes();
+        return task.getId() + "," + task.getType() + "," + task.getName() + "," + task.getStatus() + ","
+                    + task.getDescription() + "," + isStartTimeAndDuration + task.getEpicId();
+        }
+
     // ========================================= ПЕРЕОПРЕДЕЛЁННЫЕ МЕТОДЫ =============================
+
+
+
     @Override
     public Epic getEpicById(int idForSearch) {
         Epic tmpEpic = super.getEpicById(idForSearch);

@@ -23,8 +23,10 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void shouldCreateTaskAndGetTaskById() throws IOException {
         TaskManager manager = Managers.getDefault();
 
-        Task taskTest = new Task("Test name", "Test description", 0, Status.NEW);
-        Task taskTestNull = new Task(null, null, 0, null);
+        Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
+                "01.01.2000--12:00", 3600);
+        Task taskTestNull = new Task(null, null, 0, null,
+                "01.01.2000--12:00", 3600);
 
         manager.makeNewTask(taskTest);
         manager.makeNewTask(taskTestNull);
@@ -38,15 +40,17 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void shouldUpdateTask() throws IOException {
         TaskManager manager = Managers.getDefault();
-        Task taskTest = new Task("Test name", "Test description", 0, Status.NEW);
+        Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
+                "01.01.2000--12:00", 3600);
         manager.makeNewTask(taskTest);
-        Task taskTestUpdate = new Task("Test new name", "Test new description", taskTest.getId(),
-                Status.IN_PROGRESS);
+        Task taskTestUpdate = new Task("Test new name", "Test new description",
+                taskTest.getId(), Status.IN_PROGRESS, "01.01.2000--12:00", 3600);
         manager.updateTask(taskTest.getId(), taskTestUpdate);
         assertEquals(taskTestUpdate, manager.getTaskById(taskTest.getId()),         // нормальное поведение
                 "К сожалению, Task объект не обновлён, либо обновлён с ошибками");
 
-        Task updTaskWithIdError = new Task("IdError name", "IdError description", 333, Status.NEW);
+        Task updTaskWithIdError = new Task("IdError name", "IdError description", 333,
+                Status.NEW, "01.01.2000--12:00", 3600);
         manager.updateTask(taskTest.getId(), updTaskWithIdError);
         assertEquals(taskTestUpdate, manager.getTaskById(taskTest.getId()),             // некорректный ИД
                 "Задаче присвоен некорректный ID");
@@ -55,9 +59,11 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void shouldClearTask() throws IOException {
         TaskManager manager = Managers.getDefault();
-        Task taskTest1 = new Task("Test name", "Test description", 0, Status.NEW);
+        Task taskTest1 = new Task("Test name", "Test description", 0, Status.NEW,
+                "01.01.2000--12:00", 3600);
         manager.makeNewTask(taskTest1);
-        Task taskTest2 = new Task("Test name", "Test description", 0, Status.NEW);
+        Task taskTest2 = new Task("Test name", "Test description", 0,
+                Status.NEW, "01.01.2000--12:00", 3600);
         manager.makeNewTask(taskTest2);
         manager.clearTask();
         assertNull(manager.getTaskById(taskTest1.getId()), "К сожалению, Task объект не удалён");
@@ -67,8 +73,10 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void shouldGetListAllTasksFromTask() throws IOException {
         TaskManager manager = Managers.getDefault();
-        Task taskTest1 = new Task("Test name", "Test description", 0, Status.NEW);
-        Task taskTest2 = new Task("Test name", "Test description", 0, Status.NEW);
+        Task taskTest1 = new Task("Test name", "Test description", 0, Status.NEW,
+                "01.01.2000--12:00", 3600);
+        Task taskTest2 = new Task("Test name", "Test description", 0, Status.NEW,
+                "01.01.2000--12:00", 3600);
         manager.makeNewTask(taskTest1);
         manager.makeNewTask(taskTest2);
         List listTask1and2 = new ArrayList<>();
@@ -95,7 +103,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Epic epicTest = new Epic("Epic name", "Epic description", 0, Status.NEW);
         manager.makeNewEpic(epicTest);
         Subtask subtaskTest = new Subtask("Subtask name", "Subtask description",
-                0, Status.NEW, epicTest.getId());
+                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         manager.makeNewSubtask(subtaskTest);
 
         Epic epicUpdate = new Epic("Epic new name", "Epic new description",
@@ -113,9 +121,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 Status.NEW);
         manager.makeNewEpic(epicTest);
         Subtask subtaskTest1 = new Subtask("Subtask name1", "Subtask description1",
-                0, Status.NEW, epicTest.getId());
+                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         Subtask subtaskTest2 = new Subtask("Subtask name2", "Subtask description2",
-                0, Status.NEW, epicTest.getId());
+                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         manager.makeNewSubtask(subtaskTest1);
         manager.makeNewSubtask(subtaskTest2);
 
@@ -136,9 +144,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
         manager.makeNewEpic(epicTest);
         // создаём подзадачи для эпика
         Subtask subtaskTest1 = new Subtask("Subtask name1", "Subtask description1",
-                0, Status.NEW, epicTest.getId());
+                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         Subtask subtaskTest2 = new Subtask("Subtask name2", "Subtask description2",
-                0, Status.NEW, epicTest.getId());
+                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         manager.makeNewSubtask(subtaskTest1);
         manager.makeNewSubtask(subtaskTest2);
         int idSubtask1 = subtaskTest1.getId();
@@ -167,9 +175,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 Status.NEW);
         manager.makeNewEpic(epicTest);
         Subtask subtaskTest1 = new Subtask("Subtask name1", "Subtask description1",
-                0, Status.NEW, epicTest.getId());
+                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         Subtask subtaskTest2 = new Subtask("Subtask name2", "Subtask description2",
-                0, Status.NEW, epicTest.getId());
+                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         manager.makeNewSubtask(subtaskTest1);
         manager.makeNewSubtask(subtaskTest2);
 
@@ -186,11 +194,11 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 Status.NEW);
         manager.makeNewEpic(epicTest);
         Subtask subtaskTest = new Subtask("Subtask name", "Subtask description",
-                0, Status.NEW, epicTest.getId());
+                0, Status.NEW, epicTest.getId(),"01.01.2000--12:00", 3600);
         manager.makeNewSubtask(subtaskTest);
 
         Subtask updSubtaskTest = new Subtask("updSubtask name", "updSubtask description",
-                subtaskTest.getId(), Status.NEW, epicTest.getId());
+                subtaskTest.getId(), Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         manager.updateSubtask(subtaskTest.getId(),updSubtaskTest);
 
         assertEquals(updSubtaskTest, manager.getSubTaskById(subtaskTest.getId()),
@@ -203,15 +211,16 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void shouldGetHistory() throws IOException {
         TaskManager manager = Managers.getDefault();
         HistoryManager historyManager = Managers.getDefaultHistory();
-        Task taskTest = new Task("Test name", "Test description", 0, Status.NEW);
+        Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
+                "01.01.2000--12:00", 3600);
         Epic epicTest = new Epic("Epic name", "Epic description", 0,
                 Status.NEW);
         manager.makeNewTask(taskTest);
         manager.makeNewEpic(epicTest);
         Subtask subtaskTest1 = new Subtask("Subtask name1", "Subtask description1",
-                0, Status.NEW, epicTest.getId());
+                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         Subtask subtaskTest2 = new Subtask("Subtask name2", "Subtask description2",
-                0, Status.NEW, epicTest.getId());
+                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         manager.makeNewSubtask(subtaskTest1);
         manager.makeNewSubtask(subtaskTest2);
 
@@ -226,11 +235,12 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void shouldDellThemAll() throws IOException {
         TaskManager manager = Managers.getDefault();
-        Task taskTest = new Task("Test name", "Test description", 0, Status.NEW);
+        Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
+                "01.01.2000--12:00", 3600);
         Epic epicTest = new Epic("Epic name", "Epic description", 0,
                 Status.NEW);
         Subtask subtaskTest = new Subtask("Subtask name", "Subtask description",
-                0, Status.NEW, epicTest.getId());
+                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         manager.makeNewTask(taskTest);
         manager.makeNewEpic(epicTest);
         manager.makeNewSubtask(subtaskTest);

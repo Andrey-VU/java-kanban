@@ -1,7 +1,8 @@
 package ru.yandex.tasks;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-
-import static ru.yandex.tasks.Type.TASK;
 
 public class Task {
 
@@ -11,12 +12,21 @@ public class Task {
     private Status status;                 // Статус прогресса работы над задачей
     public Type type;                      // Тип задачи
 
-    public Task(String name, String description, Integer id, Status status) {
+    private LocalDateTime startTime;       // время начала задачи (дата с точностью до дня, часов, минут, секунд)
+    private Duration duration;             // прогнозная длительность выполнения (в минутах)
+
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy--HH:mm");
+
+    public Task(String name, String description, Integer id, Status status,
+                String startTime, long minutes) {
+
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = status;
         type = Type.TASK;
+        this.startTime = LocalDateTime.parse(startTime, formatter);
+        this.duration = Duration.ofMinutes(minutes);
     }
 
     public Task(String[] fromArray) {
@@ -25,6 +35,54 @@ public class Task {
         this.name = fromArray[2];
         this.status = Status.valueOf(fromArray[3]);
         this.description = fromArray[4];
+        this.startTime = LocalDateTime.parse(fromArray[5], formatter);
+        this.duration = Duration.ofMinutes(Long.parseLong(fromArray[6]));
+    }
+
+    public Task(Type type, String[] fromArrayEpic) {   // для эпика из массива
+        this.id =  Integer.parseInt(fromArrayEpic[0]);
+        this.type = type;
+        this.name = fromArrayEpic[2];
+        this.status = Status.valueOf(fromArrayEpic[3]);
+        this.description = fromArrayEpic[4];
+    }
+
+    // специализированный конструктор для Эпика
+    public Task(String name, String description, Integer id, Status status) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.status = status;
+        type = Type.TASK;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime != null || duration != null) {
+            LocalDateTime endTime = startTime.plusMinutes(duration.toMinutes());
+            return endTime;
+        } else {
+            return null;
+        }
+    }
+
+    public LocalDateTime getStartTime() {
+        if (startTime != null) {
+            return startTime;
+        } else {
+            return null;
+        }
+    }
+
+    public DateTimeFormatter getFormatter() {
+        return formatter;
+    }
+
+    public Duration getDuration() {
+        if (duration != null) {
+            return duration;
+        } else {
+            return null;
+        }
     }
 
     public void setId(int id) {
@@ -53,6 +111,8 @@ public class Task {
         return description;
     }
 
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -75,5 +135,9 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", status=" + status +
                 '}';
+    }
+
+    public String getEpicId() {
+        return "";
     }
 }

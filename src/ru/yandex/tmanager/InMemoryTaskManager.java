@@ -1,15 +1,26 @@
 package ru.yandex.tmanager;
 import ru.yandex.tasks.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.time.LocalDateTime;
+import java.util.*;
 
-public class InMemoryTaskManager implements TaskManager {
+public class InMemoryTaskManager implements TaskManager  {
     private int lastID; //  здесь хранитися последний сгенерированный id всех задач
     private HashMap<Integer, Epic> epicTasks = new HashMap<>(); // для хранения всех ru.yandex.tasks.Epic задач
     private HashMap<Integer, Subtask> subtaskTasks = new HashMap<>(); // для хранения всех ru.yandex.tasks.Subtask задач
     private HashMap<Integer, Task> taskTasks = new HashMap<>(); // для хранения всех ru.yandex.tasks.Task задач
     private HistoryManager historyManager = Managers.getDefaultHistory();
+
+    Comparator<Task> comparator = (task, t1) ->  task.getStartTime().isBefore(t1.getStartTime()) ? 1 : -1;
+    Set<Task> prioritizedTasks = new TreeSet<>(comparator);
+
+    public Set<Task> getPrioritizedTasks() {
+        if (!prioritizedTasks.isEmpty()) {
+            return prioritizedTasks;
+        } else {
+            return null;
+        }
+    }
 
     public HashMap<Integer, Epic> getEpicTasks() {
         return epicTasks;
@@ -32,6 +43,7 @@ public class InMemoryTaskManager implements TaskManager {
             int uniqueEpicId = makeID();
             newEpic.setId(uniqueEpicId);
             epicTasks.put(uniqueEpicId, newEpic);         // сохранили объект с описанием ru.yandex.tasks.Epic задачи
+            //prioritizedTasks.add(newEpic);
         }
     }
 
@@ -201,6 +213,8 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
+
+
     public void printHistory()  {
         System.out.println("================= ИСТОРИЯ ПРОСМОТРА ЗАДАЧ ============================");
         for (Task task : getHistory()) {
@@ -260,7 +274,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     String toStringForFile(Task task) {
         return task.getId() + "," + task.getType() + "," + task.getName() +  "," + task.getStatus() + ","
-                + task.getDescription();
+                + task.getDescription() + "," + task.getStartTime()  + "," + task.getDuration();
     }
 }
 
