@@ -1,5 +1,4 @@
 package ru.yandex.tests;
-
 import org.junit.jupiter.api.Test;
 import ru.yandex.tasks.Epic;
 import ru.yandex.tasks.Status;
@@ -10,13 +9,16 @@ import ru.yandex.tmanager.Managers;
 import ru.yandex.tmanager.TaskManager;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 abstract class TaskManagerTest<T extends TaskManager> {
+
+    private Throwable exception;
 
     // ======= ДЛЯ ======= TASK ===================
     @Test
@@ -250,5 +252,149 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertNull(manager.getEpicById(epicTest.getId()),"Epic не удалён");
         assertNull(manager.getSubTaskById(subtaskTest.getId()), "Подзадача не удалена");
     }
+
+    @Test
+    void shouldGetStartTime() throws IOException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy--HH:mm");
+        TaskManager manager = Managers.getDefault();
+        Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
+                "01.01.2000--12:00", 3600);
+        Epic epicTest = new Epic("Epic name", "Epic description", 0,
+                Status.NEW);
+        Subtask subtaskTest1 = new Subtask("Subtask name", "Subtask description",
+                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
+
+        manager.makeNewTask(taskTest);
+        manager.makeNewEpic(epicTest);
+        manager.makeNewSubtask(subtaskTest1);
+
+        Task task = manager.getTaskById(taskTest.getId());
+        Subtask subtask = manager.getSubTaskById(subtaskTest1.getId());
+        Epic epic = manager.getEpicById(epicTest.getId());
+        LocalDateTime testTimeStart = LocalDateTime.parse("01.01.2000--12:00", formatter);
+
+        if (task != null) {
+            assertEquals(testTimeStart, task.getStartTime(),
+                    "Время старта объекта Task не получено");
+        }
+        if (subtask != null) {
+            assertEquals(testTimeStart, subtask.getStartTime(),
+                    "Время старта объекта SubTask не получено");
+        }
+        if (epic != null && epic.getStartTime() != null){
+            assertEquals(testTimeStart, epic.getStartTime(),
+                    "Время старта объекта Epic не получено");
+        }
+    }
+
+    @Test
+    void shouldGetDuration() throws IOException {
+        TaskManager manager = Managers.getDefault();
+        Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
+                "01.01.2000--12:00", 3600);
+        Epic epicTest = new Epic("Epic name", "Epic description", 0,
+                Status.NEW);
+        Subtask subtaskTest1 = new Subtask("Subtask name", "Subtask description",
+                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
+
+        manager.makeNewTask(taskTest);
+        manager.makeNewEpic(epicTest);
+        manager.makeNewSubtask(subtaskTest1);
+
+        Task task = manager.getTaskById(taskTest.getId());
+        Subtask subtask = manager.getSubTaskById(subtaskTest1.getId());
+        Epic epic = manager.getEpicById(epicTest.getId());
+        long duration = 3600;
+
+        if (task != null) {
+            assertEquals(duration, task.getDuration().toMinutes(),
+                    "Длительность объекта Task не получена");
+        }
+        if (subtask != null) {
+            assertEquals(duration, subtask.getDuration().toMinutes(),
+                    "Длительность объекта SubTask не получена");
+        }
+        if (epic != null && epic.getDuration() != null){
+            assertEquals(duration, epic.getDuration().toMinutes(),
+                    "Длительность объекта Epic не рассчитана, либо не получена");
+        }
+    }
+
+    @Test
+    void shouldCalculateDataStartAndDurationInEpic() throws IOException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy--HH:mm");
+        TaskManager manager = Managers.getDefault();
+        Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
+                "01.01.2000--12:00", 3600);
+        Epic epicTest = new Epic("Epic name", "Epic description", 0,
+                Status.NEW);
+        Subtask subtaskTest1 = new Subtask("Subtask name", "Subtask description",
+                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
+        Subtask subtaskTest2 = new Subtask("Subtask name2", "Subtask description2",
+                0, Status.NEW, epicTest.getId(), "01.01.2000--10:00", 3600);
+
+        manager.makeNewTask(taskTest);
+        manager.makeNewEpic(epicTest);
+        manager.makeNewSubtask(subtaskTest1);
+        manager.makeNewSubtask(subtaskTest2);
+
+        int idOfSub1 = subtaskTest1.getId();
+        int idOfSub2 = subtaskTest2.getId();
+        int idOfEpic = epicTest.getId();
+
+        LocalDateTime first = LocalDateTime.parse("01.01.2000--10:00", formatter);
+        Epic epic = manager.getEpicById(idOfEpic);
+        Subtask sub1 = manager.getSubTaskById(idOfSub1);
+        Subtask sub2 = manager.getSubTaskById(idOfSub2);
+
+        if (epic != null && epic.getStartTime() != null) {
+            assertEquals(true, first.isEqual(epic.getStartTime()),
+                    "Время старта Эпика рассчитано не верно");
+        }
+
+        if (sub1 != null && sub2 != null && sub2.getDuration() != null && sub1.getDuration() != null) {
+            long duration = sub2.getDuration().toMinutes() + sub1.getDuration().toMinutes();
+        if (epic != null && epic.getDuration() != null) {
+            assertEquals(duration, epic.getDuration().toMinutes(), "Длительность Эпика рассчитано не верно");
+        }}
+  }
+
+    @Test
+    public void shouldMakeInterceptionException() throws IOException {
+//        IntersectionException exceptionTest = new IntersectionException("Конфликт времени исполнения! " +
+//                "Задача не может быть добавлена");
+        TaskManager manager = Managers.getDefault();
+        Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
+                "01.01.2000--12:00", 3600);
+        Epic epicTest = new Epic("Epic name", "Epic description", 0,
+                Status.NEW);
+        Subtask subtaskTest1 = new Subtask("Subtask name", "Subtask description",
+                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
+        Task testTask = new Task("Test_Task_name","Test_Task_description", 0, Status.NEW,
+                "01.01.2004--12:00", 3600);
+        manager.makeNewTask(taskTest);
+        manager.makeNewEpic(epicTest);
+        manager.makeNewSubtask(subtaskTest1);
+        manager.makeNewTask(testTask);
+
+//        assertThrows(exceptionTest, "Ошибка. " +
+//                "Метод не отлавливает IntersectionException!");
+    }
+
+//    @Test
+//    void testExpectedException() {
+//        String exceptionText = "Конфликт времени исполнения! Задача не может быть добавлена";
+//        IntersectionException thrown = Assertions.assertThrows(IntersectionException.class, () -> {
+//            //Code under test
+//            shouldMakeInterceptionException();
+//        });
+//
+//        Assertions.assertEquals(exceptionText, exception.getMessage());
+//    }
+
+//    private void assertThrows(IntersectionException exceptionTest, String s) {
+//    }
+
+
 }
 

@@ -36,7 +36,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest {
         recoveredFromFile = FileBackedTasksManager.loadFromFile(FileBackedTasksManager.fileIn);
 
         testTaskZ = new Task("Test_Task_name","Test_Task_description", 0, Status.NEW,
-                "01.01.2000--12:00", 3600);
+                "01.01.2004--12:00", 3600);
         testEpicZ = new Epic("Test_Epic_name","Test_Epic_description",0,Status.NEW);
 
         inMemoryManager.makeNewTask(testTaskZ);
@@ -61,6 +61,44 @@ class FileBackedTasksManagerTest extends TaskManagerTest {
         }
         FileBackedTasksManager.fileIn = null;
         FileBackedTasksManager.fileOut = null;
+        if (recoveredFromFile.getPrioritizedTasks() !=null) {
+            recoveredFromFile.getPrioritizedTasks().clear();
+        }
+    }
+
+
+    @Test
+    public void shouldMakePrioritizedList () throws IOException {
+        String[] newTmpTask = {"4","TASK","Гитарный конкурс в Питере","NEW","Купить билеты",
+                "01.01.2005--12:00","3600"};
+                Task tmpTask = new Task(newTmpTask);
+        recoveredFromFile.makeNewTask(tmpTask);
+        List<Task> tmpPrioroty = new ArrayList<>();
+        tmpPrioroty.add(recoveredFromFile.getSubTaskById(3));
+        tmpPrioroty.add(recoveredFromFile.getTaskById(1));
+        tmpPrioroty.add(recoveredFromFile.getTaskById(4));
+
+        List<Task> priorityTest = recoveredFromFile.getPrioritizedTasks();
+        assertEquals(tmpPrioroty, priorityTest,
+                "Задачи не удалось ранжировать по времени старта");
+    }
+
+    @Test
+    public void shouldMakePrioritizedListWithoutData () throws IOException {
+
+        Task tmpTask4 = new Task("Гитарный конкурс в Питере","Купить билеты",4,Status.NEW);
+        Task tmpTask5 = new Task("Test_priority","Descr 5",5,Status.NEW);
+        recoveredFromFile.makeNewTask(tmpTask4);
+        recoveredFromFile.makeNewTask(tmpTask5);
+        List<Task> tmpPrioroty = new ArrayList<>();
+        tmpPrioroty.add(recoveredFromFile.getSubTaskById(3));
+        tmpPrioroty.add(recoveredFromFile.getTaskById(1));
+        tmpPrioroty.add(recoveredFromFile.getTaskById(4));
+        tmpPrioroty.add(recoveredFromFile.getTaskById(5));
+
+        List<Task> priorityTest = recoveredFromFile.getPrioritizedTasks();
+        assertEquals(tmpPrioroty, priorityTest,
+                "Ошибка, когда у задач не прописано время старта");
     }
 
         @Test

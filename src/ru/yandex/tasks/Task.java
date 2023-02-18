@@ -47,7 +47,7 @@ public class Task {
         this.description = fromArrayEpic[4];
     }
 
-    // специализированный конструктор для Эпика
+    // специализированный конструктор для Эпика и для задач без времени старта
     public Task(String name, String description, Integer id, Status status) {
         this.name = name;
         this.description = description;

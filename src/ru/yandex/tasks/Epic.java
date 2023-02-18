@@ -24,7 +24,7 @@ public class Epic extends Task {
         super(type, fromArrayEpic);
     }
 
-    public Duration totalOfSubDuration() {
+    private Duration totalOfSubDuration() {
         long storageOfDurationInMinutes = 0;
         for (Subtask mySubtask : mySubtasks) {
             storageOfDurationInMinutes += mySubtask.getDuration().toMinutes();
@@ -32,7 +32,7 @@ public class Epic extends Task {
         return storageOfDurationInMinutes == 0 ? null : Duration.ofMinutes(storageOfDurationInMinutes);
     }
 
-    public LocalDateTime latestSubtaskEndTime() {
+    private LocalDateTime latestSubtaskEndTime() {
         Map<Integer, LocalDateTime> storageOfEndTime = new HashMap<>();
         for (Subtask mySubtask : mySubtasks) {
             storageOfEndTime.put(mySubtask.getId(), mySubtask.getEndTime());
@@ -68,5 +68,20 @@ public class Epic extends Task {
             return mySubtasks;
         }
         return null;
+    }
+
+    @Override
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    @Override
+    public Duration getDuration() {
+        return duration;
     }
 }

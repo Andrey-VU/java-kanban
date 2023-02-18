@@ -7,8 +7,13 @@ import ru.yandex.tasks.Task;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public interface TaskManager {
+    void checkerForIntersection(Task newTask);
+
+    List<Task> getPrioritizedTasks();
+
     // МЕТОДЫ ДЛЯ EPIC ==============================================================================================
     void makeNewEpic(Epic epic) throws IOException, ManagerSaveException;                           // создать/сохранить новую Эпик задачу
     Epic getEpicById(int idForSearch);                     //Получить задачи  ru.yandex.tasks.Epic по идентификатору
@@ -31,10 +36,14 @@ public interface TaskManager {
     ArrayList<Task> getListAllTasksFromTask();               //Получение списка всех ru.yandex.tasks.Task задач
 
     // МЕТОДЫ ДЛЯ ЗАДАЧ ВСЕХ типов сразу  ==========================================================================
+
     ArrayList<Task> getHistory();  // получение 10 объектов истории просмотров
     ArrayList<Object> getListAllTasks();                      //Получение списка всех задач всех типов
     void dellThemAll() throws IOException, ManagerSaveException;                                       //Удаление всех задач.
     void dellTaskById(int idForDell) throws IOException, ManagerSaveException;                         //Удаление по идентификатору.
 
+    List<Task> getPrioritizedTasks(Task task);  // получение списка задач, ранжированных по времени
+    void checkerForIntersection();     // проверка отсутствия пересечения задач по времени старта и длительности
     void printHistory();
+
 }

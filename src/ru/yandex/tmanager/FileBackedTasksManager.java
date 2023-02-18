@@ -3,17 +3,17 @@ import ru.yandex.exceptions.ManagerSaveException;
 import ru.yandex.tasks.*;
 import java.io.*;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static ru.yandex.tasks.Type.EPIC;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     public static File fileIn;
     public static File fileOut;
-    //public DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("dd.MM.yyyy--HH:mm");
+
+    public FileBackedTasksManager() {
+        super.prioritizedTasks = new TreeSet<>(comparator);
+    }
 
     public static void main(String[] args) throws IOException {
         fileIn = new File("storage.csv");
@@ -32,6 +32,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             recoveredFromFile.getTaskById(1);
             recoveredFromFile.getSubTaskById(5);
         }
+
     }
 
     private void save() throws ManagerSaveException {             // сохранение изменений в файл
@@ -166,11 +167,16 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 task.getStartTime().format(task.getFormatter()) + "," + task.getDuration().toMinutes();
         return task.getId() + "," + task.getType() + "," + task.getName() + "," + task.getStatus() + ","
                     + task.getDescription() + "," + isStartTimeAndDuration + task.getEpicId();
+
         }
 
     // ========================================= ПЕРЕОПРЕДЕЛЁННЫЕ МЕТОДЫ =============================
 
 
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        return super.getPrioritizedTasks();
+    }
 
     @Override
     public Epic getEpicById(int idForSearch) {
