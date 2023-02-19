@@ -17,7 +17,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public static void main(String[] args) throws IOException {
         fileIn = new File("storage.csv");
-        fileOut = new File("storageOUT_TMP.csv");
+        fileOut = new File("storage.csv");
         TaskManager recoveredFromFile = loadFromFile(fileIn);
 
         if (recoveredFromFile != null) {
@@ -25,7 +25,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             recoveredFromFile.getSubTaskById(3);
             recoveredFromFile.dellTaskById(3);
             recoveredFromFile.getTaskById(6);
-            recoveredFromFile.dellTaskById(6);
+           // recoveredFromFile.dellTaskById(6);
             recoveredFromFile.getSubTaskById(4);
             recoveredFromFile.getEpicById(2);
             recoveredFromFile.getTaskById(7);

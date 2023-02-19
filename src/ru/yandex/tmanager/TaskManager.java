@@ -1,4 +1,5 @@
 package ru.yandex.tmanager;
+import ru.yandex.exceptions.IntersectionException;
 import ru.yandex.exceptions.ManagerSaveException;
 import ru.yandex.tasks.Epic;
 import ru.yandex.tasks.Subtask;
@@ -6,11 +7,10 @@ import ru.yandex.tasks.Task;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public interface TaskManager {
-    void checkerForIntersection(Task newTask);
+    boolean findIntersection(Task newTask) throws IntersectionException;
 
     List<Task> getPrioritizedTasks();
 
@@ -42,8 +42,6 @@ public interface TaskManager {
     void dellThemAll() throws IOException, ManagerSaveException;                                       //Удаление всех задач.
     void dellTaskById(int idForDell) throws IOException, ManagerSaveException;                         //Удаление по идентификатору.
 
-    List<Task> getPrioritizedTasks(Task task);  // получение списка задач, ранжированных по времени
-    void checkerForIntersection();     // проверка отсутствия пересечения задач по времени старта и длительности
     void printHistory();
 
 }

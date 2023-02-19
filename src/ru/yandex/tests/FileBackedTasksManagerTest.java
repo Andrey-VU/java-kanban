@@ -179,7 +179,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest {
         Epic epicFromFile = newRecoveredFromFile.getEpicById(2);
         Subtask subtaskFromFile = newRecoveredFromFile.getSubTaskById(3);
 
-        assertEquals(taskFromMemory.toString(), taskFromFile.toString(),
+        assertEquals(taskFromMemory, taskFromFile,
               "Task без истории не создан или создан с ошибками");
         assertEquals(epicFromMemory, epicFromFile, "Epic без истории не создан или создан с ошибками");
         assertEquals(subtaskFromMemory, subtaskFromFile, "SubTask без истории не создан или создан с ошибками");
