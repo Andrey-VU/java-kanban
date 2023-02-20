@@ -37,7 +37,7 @@ class EpicTest {
         Subtask subtaskTest1 = new Subtask("Subtask name1", "Subtask description1",
                 0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         Subtask subtaskTest2 = new Subtask("Subtask name2", "Subtask description2",
-                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
+                0, Status.NEW, epicTest.getId(), "01.02.2000--12:00", 3600);
         manager.makeNewSubtask(subtaskTest1);
         manager.makeNewSubtask(subtaskTest2);
         manager.getEpicById(epicTest.getId()).setMySubtask(subtaskTest1);
@@ -52,7 +52,7 @@ class EpicTest {
         Subtask subtaskTest1 = new Subtask("Subtask name1", "Subtask description1",
                 0, Status.DONE, epicTest.getId(), "01.01.2000--12:00", 3600);
         Subtask subtaskTest2 = new Subtask("Subtask name2", "Subtask description2",
-                0, Status.DONE, epicTest.getId(), "01.01.2000--12:00", 3600);
+                0, Status.DONE, epicTest.getId(), "01.03.2000--10:00", 3600);
         manager.makeNewSubtask(subtaskTest1);
         manager.makeNewSubtask(subtaskTest2);
         Status newStatus = manager.getEpicById(epicTest.getId()).getStatus();
@@ -65,7 +65,7 @@ class EpicTest {
         Subtask subtaskTest1 = new Subtask("Subtask name1", "Subtask description1",
                 0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         Subtask subtaskTest2 = new Subtask("Subtask name2", "Subtask description2",
-                0, Status.DONE, epicTest.getId(), "01.01.2000--12:00", 3600);
+                0, Status.DONE, epicTest.getId(), "01.02.2000--12:00", 3600);
         manager.makeNewSubtask(subtaskTest1);
         manager.makeNewSubtask(subtaskTest2);
         manager.getEpicById(epicTest.getId()).setMySubtask(subtaskTest1);
@@ -80,7 +80,7 @@ class EpicTest {
         Subtask subtaskTest1 = new Subtask("Subtask name1", "Subtask description1",
                 0, Status.IN_PROGRESS, epicTest.getId(), "01.01.2000--12:00", 3600);
         Subtask subtaskTest2 = new Subtask("Subtask name2", "Subtask description2",
-                0, Status.IN_PROGRESS, epicTest.getId(), "01.01.2000--12:00", 3600);
+                0, Status.IN_PROGRESS, epicTest.getId(), "01.02.2000--12:00", 3600);
         manager.makeNewSubtask(subtaskTest1);
         manager.makeNewSubtask(subtaskTest2);
         manager.getEpicById(epicTest.getId()).setMySubtask(subtaskTest1);

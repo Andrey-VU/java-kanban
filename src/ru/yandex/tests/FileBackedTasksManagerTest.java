@@ -66,20 +66,19 @@ class FileBackedTasksManagerTest extends TaskManagerTest {
         }
     }
 
-
     @Test
-    public void shouldMakePrioritizedList () throws IOException {
+    public void shouldMakePrioritizedList() throws IOException {
         String[] newTmpTask = {"4","TASK","Гитарный конкурс в Питере","NEW","Купить билеты",
-                "01.01.2005--12:00","3600"};
-                Task tmpTask = new Task(newTmpTask);
+                "01.01.1999--12:00","3600"};
+        Task tmpTask = new Task(newTmpTask);
         recoveredFromFile.makeNewTask(tmpTask);
-        List<Task> tmpPrioroty = new ArrayList<>();
-        tmpPrioroty.add(recoveredFromFile.getSubTaskById(3));
-        tmpPrioroty.add(recoveredFromFile.getTaskById(1));
-        tmpPrioroty.add(recoveredFromFile.getTaskById(4));
+        List<Task> tmpPriority = new ArrayList<>();
+        tmpPriority.add(recoveredFromFile.getTaskById(4));
+        tmpPriority.add(recoveredFromFile.getSubTaskById(3));
+        tmpPriority.add(recoveredFromFile.getTaskById(1));
 
         List<Task> priorityTest = recoveredFromFile.getPrioritizedTasks();
-        assertEquals(tmpPrioroty, priorityTest,
+        assertEquals(tmpPriority, priorityTest,
                 "Задачи не удалось ранжировать по времени старта");
     }
 
@@ -114,7 +113,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest {
                 "Epic из файла загружен не корректно");
         assertEquals(inMemoryManager.getSubTaskById(3), subtaskFromFile,
                 "Subtask из файла загружен не корректно");
-        assertEquals(historyForTest.toString(), newHistory.toString(),
+        assertEquals(historyForTest, newHistory,
                 "История из файла загружена не корректно");
     }
 

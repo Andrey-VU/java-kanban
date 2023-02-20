@@ -17,13 +17,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 abstract class TaskManagerTest<T extends TaskManager> {
-
-    private Throwable exception;
+    TaskManager manager = Managers.getDefault();
 
     // ======= ДЛЯ ======= TASK ===================
     @Test
     void shouldCreateTaskAndGetTaskById() throws IOException {
-        TaskManager manager = Managers.getDefault();
 
         Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
                 "01.01.2000--12:00", 3600);
@@ -41,13 +39,13 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldUpdateTask() throws IOException {
-        TaskManager manager = Managers.getDefault();
         Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
                 "01.01.2020--12:00", 3600);
         manager.makeNewTask(taskTest);
         Task taskTestUpdate = new Task("Test new name", "Test new description",
                 taskTest.getId(), Status.IN_PROGRESS, "01.01.2020--12:00", 3600);
         manager.updateTask(taskTest.getId(), taskTestUpdate);
+
         assertEquals(taskTestUpdate, manager.getTaskById(taskTest.getId()),         // нормальное поведение
                 "К сожалению, Task объект не обновлён, либо обновлён с ошибками");
 
@@ -60,7 +58,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldClearTask() throws IOException {
-        TaskManager manager = Managers.getDefault();
         Task taskTest1 = new Task("Test name", "Test description", 0, Status.NEW,
                 "01.01.2000--12:00", 3600);
         manager.makeNewTask(taskTest1);
@@ -74,9 +71,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldGetListAllTasksFromTask() throws IOException {
-        TaskManager manager = Managers.getDefault();
         Task taskTest1 = new Task("Test name", "Test description", 0, Status.NEW,
-                "01.01.2000--12:00", 3600);
+                "01.02.2000--12:00", 3600);
         Task taskTest2 = new Task("Test name", "Test description", 0, Status.NEW,
                 "01.01.2000--12:00", 3600);
         manager.makeNewTask(taskTest1);
@@ -91,7 +87,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
     // ========================= ДЛЯ =========================== EPIC ============================
     @Test
     void shouldCreateEpicAndGetEpicById() throws IOException {
-        TaskManager manager = Managers.getDefault();
         Epic epicTest = new Epic("Epic name", "Epic description", 0,
                 Status.NEW);
         manager.makeNewEpic(epicTest);
@@ -101,7 +96,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldUpdateEpic() throws IOException {
-        TaskManager manager = Managers.getDefault();
         Epic epicTest = new Epic("Epic name", "Epic description", 0, Status.NEW);
         manager.makeNewEpic(epicTest);
         Subtask subtaskTest = new Subtask("Subtask name", "Subtask description",
@@ -117,13 +111,11 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldGetListSubtasksOfEpic() throws IOException {
-        TaskManager manager = Managers.getDefault();
-
         Epic epicTest = new Epic("Epic name", "Epic description", 0,
                 Status.NEW);
         manager.makeNewEpic(epicTest);
         Subtask subtaskTest1 = new Subtask("Subtask name1", "Subtask description1",
-                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
+                0, Status.NEW, epicTest.getId(), "01.03.2000--12:00", 3600);
         Subtask subtaskTest2 = new Subtask("Subtask name2", "Subtask description2",
                 0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         manager.makeNewSubtask(subtaskTest1);
@@ -139,16 +131,15 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldDellAllEpic() throws IOException {
-        TaskManager manager = Managers.getDefault();
-        //  создаём Epic
+
         Epic epicTest = new Epic("Epic name", "Epic description", 0,
                 Status.NEW);
         manager.makeNewEpic(epicTest);
-        // создаём подзадачи для эпика
+
         Subtask subtaskTest1 = new Subtask("Subtask name1", "Subtask description1",
                 0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         Subtask subtaskTest2 = new Subtask("Subtask name2", "Subtask description2",
-                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
+                0, Status.NEW, epicTest.getId(), "01.03.2000--12:00", 3600);
         manager.makeNewSubtask(subtaskTest1);
         manager.makeNewSubtask(subtaskTest2);
         int idSubtask1 = subtaskTest1.getId();
@@ -172,14 +163,13 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldCreateAndGetSubtaskById() throws IOException {
-        TaskManager manager = Managers.getDefault();
         Epic epicTest = new Epic("Epic name", "Epic description", 0,
                 Status.NEW);
         manager.makeNewEpic(epicTest);
         Subtask subtaskTest1 = new Subtask("Subtask name1", "Subtask description1",
                 0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
         Subtask subtaskTest2 = new Subtask("Subtask name2", "Subtask description2",
-                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
+                0, Status.NEW, epicTest.getId(), "01.04.2000--12:00", 3600);
         manager.makeNewSubtask(subtaskTest1);
         manager.makeNewSubtask(subtaskTest2);
 
@@ -191,7 +181,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldUpdateSubtask() throws IOException {
-        TaskManager manager = Managers.getDefault();
         Epic epicTest = new Epic("Epic name", "Epic description", 0,
                 Status.NEW);
         manager.makeNewEpic(epicTest);
@@ -211,7 +200,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldGetHistory() throws IOException {
-        TaskManager manager = Managers.getDefault();
         HistoryManager historyManager = Managers.getDefaultHistory();
         Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
                 "01.01.2000--12:00", 3600);
@@ -220,9 +208,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
         manager.makeNewTask(taskTest);
         manager.makeNewEpic(epicTest);
         Subtask subtaskTest1 = new Subtask("Subtask name1", "Subtask description1",
-                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
+                0, Status.NEW, epicTest.getId(), "01.02.2000--12:00", 3600);
         Subtask subtaskTest2 = new Subtask("Subtask name2", "Subtask description2",
-                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
+                0, Status.NEW, epicTest.getId(), "01.03.2000--12:00", 3600);
         manager.makeNewSubtask(subtaskTest1);
         manager.makeNewSubtask(subtaskTest2);
 
@@ -236,7 +224,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldDellThemAll() throws IOException {
-        TaskManager manager = Managers.getDefault();
         Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
                 "01.01.2000--12:00", 3600);
         Epic epicTest = new Epic("Epic name", "Epic description", 0,
@@ -262,7 +249,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Epic epicTest = new Epic("Epic name", "Epic description", 0,
                 Status.NEW);
         Subtask subtaskTest1 = new Subtask("Subtask name", "Subtask description",
-                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
+                0, Status.NEW, epicTest.getId(), "01.03.2000--12:00", 3600);
 
         manager.makeNewTask(taskTest);
         manager.makeNewEpic(epicTest);
@@ -289,7 +276,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldGetDuration() throws IOException {
-        TaskManager manager = Managers.getDefault();
         Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
                 "01.01.2000--12:00", 3600);
         Epic epicTest = new Epic("Epic name", "Epic description", 0,
@@ -323,15 +309,14 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void shouldCalculateDataStartAndDurationInEpic() throws IOException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy--HH:mm");
-        TaskManager manager = Managers.getDefault();
         Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
                 "01.01.2000--12:00", 3600);
         Epic epicTest = new Epic("Epic name", "Epic description", 0,
                 Status.NEW);
         Subtask subtaskTest1 = new Subtask("Subtask name", "Subtask description",
-                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
+                0, Status.NEW, epicTest.getId(), "01.02.2000--12:00", 3600);
         Subtask subtaskTest2 = new Subtask("Subtask name2", "Subtask description2",
-                0, Status.NEW, epicTest.getId(), "01.01.2000--10:00", 3600);
+                0, Status.NEW, epicTest.getId(), "01.03.2000--10:00", 3600);
 
         manager.makeNewTask(taskTest);
         manager.makeNewEpic(epicTest);
@@ -358,43 +343,5 @@ abstract class TaskManagerTest<T extends TaskManager> {
             assertEquals(duration, epic.getDuration().toMinutes(), "Длительность Эпика рассчитано не верно");
         }}
   }
-
-    @Test
-    public void shouldMakeInterceptionException() throws IOException {
-//        IntersectionException exceptionTest = new IntersectionException("Конфликт времени исполнения! " +
-//                "Задача не может быть добавлена");
-        TaskManager manager = Managers.getDefault();
-        Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
-                "01.01.2000--12:00", 3600);
-        Epic epicTest = new Epic("Epic name", "Epic description", 0,
-                Status.NEW);
-        Subtask subtaskTest1 = new Subtask("Subtask name", "Subtask description",
-                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
-        Task testTask = new Task("Test_Task_name","Test_Task_description", 0, Status.NEW,
-                "01.01.2004--12:00", 3600);
-        manager.makeNewTask(taskTest);
-        manager.makeNewEpic(epicTest);
-        manager.makeNewSubtask(subtaskTest1);
-        manager.makeNewTask(testTask);
-
-//        assertThrows(exceptionTest, "Ошибка. " +
-//                "Метод не отлавливает IntersectionException!");
-    }
-
-//    @Test
-//    void testExpectedException() {
-//        String exceptionText = "Конфликт времени исполнения! Задача не может быть добавлена";
-//        IntersectionException thrown = Assertions.assertThrows(IntersectionException.class, () -> {
-//            //Code under test
-//            shouldMakeInterceptionException();
-//        });
-//
-//        Assertions.assertEquals(exceptionText, exception.getMessage());
-//    }
-
-//    private void assertThrows(IntersectionException exceptionTest, String s) {
-//    }
-
-
 }
 

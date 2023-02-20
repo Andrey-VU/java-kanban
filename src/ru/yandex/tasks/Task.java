@@ -10,7 +10,7 @@ public class Task {
     private String description;            // описание, в котором раскрываются детали
     private int id;                        // Уникальный идентификационный номер
     private Status status;                 // Статус прогресса работы над задачей
-    public Type type;                      // Тип задачи
+    Type type;                      // Тип задачи
 
     private LocalDateTime startTime;       // время начала задачи (дата с точностью до дня, часов, минут, секунд)
     private Duration duration;             // прогнозная длительность выполнения (в минутах)
@@ -110,7 +110,6 @@ public class Task {
     public String getDescription() {
         return description;
     }
-
 
 
     @Override

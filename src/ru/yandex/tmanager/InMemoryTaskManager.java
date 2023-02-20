@@ -38,24 +38,24 @@ public class InMemoryTaskManager implements TaskManager  {
     }
 
     @Override
-    public boolean findIntersection(Task newTask) {
+    public boolean findIntersection(Task newTask)  {
         // если список ранжированных задач пуст - возвращает false = разрешает создать задачу...
-        if (getPrioritizedTasks() != null && getPrioritizedTasks().isEmpty()){
+        if (getPrioritizedTasks().isEmpty()){
             return false;
         } else if (newTask.getStartTime() == null) {   // если время старта newT не задано
             return false;
-        } else {
+        } else {                      // если найдём пересечения, вернём true, во всех иных случаях вернём false
             for (Task prioritizedTask : getPrioritizedTasks()) {
-                if (prioritizedTask.getStartTime() == null) {
-                    return false;
-                } else if (newTask.getStartTime().isAfter(prioritizedTask.getEndTime()) ||
-                            newTask.getEndTime().isBefore(prioritizedTask.getStartTime())) {
-                    return false;
-                    }
+                if (prioritizedTask.getStartTime().isBefore(newTask.getStartTime()) &&
+                        prioritizedTask.getEndTime().isAfter(newTask.getStartTime())) {
+                    return true;
+                } else if (prioritizedTask.getStartTime().isBefore(newTask.getEndTime()) &&
+                        (prioritizedTask.getEndTime().isAfter(newTask.getStartTime()))) {
+                    return true;
+                }
             }
         }
-        // иначе нельзя создавать задачу!
-        return true;
+        return false;
     }
 
     @Override
@@ -147,28 +147,32 @@ public class InMemoryTaskManager implements TaskManager  {
     public void makeNewSubtask(Subtask subtask) throws IntersectionException {
         if (subtask != null) {
             try {
-                if (findIntersection(subtask) == false) {      // если пересечения не найдены
-                    if (getPrioritizedTasks() != null) {          // если список приоритетных задач существует
-                        prioritizedTasks.add(subtask);       // добавляем новую задачу в список приоритетов
-                                                                  // рарзрешаем создать новую задачу
-                        int uniqSubtaskId = makeID();                  // присвоили подзадаче уникальный id
-                        subtask.setId(uniqSubtaskId);               // присвоили подзадаче уникальный id
-                        if (getEpicById(subtask.getEpicID()) != null) {
-                            getEpicById(subtask.getEpicID()).setMySubtask(subtask);         // отправить подзадачу в эпик
-                            subtaskTasks.put(uniqSubtaskId, subtask);   // записали  подзадачу в хранилище
-                            statusChecker(getEpicById(subtask.getEpicID()));       // проверить статусы всех субтасков, входящих в Эпик,
-                            //   скорректировать статус эпика, если необходимо
-                        }
-                    }
-                } else {
+                if (findIntersection(subtask)) {
                     throw new IntersectionException("Конфликт времени исполнения! Задача не может быть добавлена");
                 }
             } catch (IntersectionException exception) {
                 System.out.println(exception.getMessage());
-            }
+                }
 
+            if (!findIntersection(subtask)) {       // если пересечения не найдены
+
+
+                    // разрешаем создать новую задачу
+                    int uniqSubtaskId = makeID();                  // присвоили подзадаче уникальный id
+                    subtask.setId(uniqSubtaskId);               // присвоили подзадаче уникальный id
+                    if (getEpicById(subtask.getEpicID()) != null) {
+                        getEpicById(subtask.getEpicID()).setMySubtask(subtask);  // отправить подзадачу в эпик
+                        subtaskTasks.put(uniqSubtaskId, subtask);   // записали подзадачу в хранилище
+                        statusChecker(getEpicById(subtask.getEpicID()));   // проверить статусы всех субтасков,
+                        // входящих в Эпик, скорректировать статус эпика, если необходимо
+                        prioritizedTasks.add(subtask);       // добавляем новую задачу в список приоритетов
+                    }
+                }
+            }
         }
-    }
+
+        //}
+
     @Override
     public Subtask getSubTaskById(int idForSearch) {       //Получение задачи subTask по идентификатору.
         if (subtaskTasks.containsKey(idForSearch) && !subtaskTasks.get(idForSearch).equals(null)) {
@@ -182,23 +186,30 @@ public class InMemoryTaskManager implements TaskManager  {
     @Override
     public void updateSubtask(int idForUpdate, Subtask subtask) {
         if (subtaskTasks.containsKey(idForUpdate) && subtask.getId() == idForUpdate) {
-
+            Subtask tmpSubTask = getSubTaskById(idForUpdate);
             try {
-                if (findIntersection(subtask) == false) {  // проверяем наличие пересечений!!!
-                    prioritizedTasks.add(subtask);
-                    getEpicById(subtask.getEpicID()).getMySubtasks().remove(getSubTaskById(subtask.getId()));
-                    dellTaskById(subtask.getId());   // очищаем список подзадач эпика и главное хранилище подзадач
-                    getEpicById(subtask.getEpicID()).setMySubtask(subtask);         // отправить подзадачу в эпик
-                    subtaskTasks.put(idForUpdate, subtask);
+                prioritizedTasks.removeIf(obj -> obj.getId() == subtask.getId());
+                getPrioritizedTasks().removeIf(obj -> obj.getId() == subtask.getId());
 
-                } else {
+                if (findIntersection(subtask)) {
+                    prioritizedTasks.add(tmpSubTask);
                     throw new IntersectionException("Конфликт времени исполнения! Задача не может быть добавлена");
-                }
+                 }
             } catch (IntersectionException exception) {
                 System.out.println(exception.getMessage());
             }
+
+            if (!findIntersection(subtask)) {  // проверяем наличие пересечений!!!
+
+                getEpicById(subtask.getEpicID()).getMySubtasks().remove(getSubTaskById(subtask.getId()));
+                dellTaskById(subtask.getId());   // очищаем список подзадач эпика и главное хранилище подзадач
+                getEpicById(subtask.getEpicID()).setMySubtask(subtask);         // отправить подзадачу в эпик
+                subtaskTasks.put(idForUpdate, subtask);
+                prioritizedTasks.add(subtask);
+            }
+
+            statusChecker(getEpicById(subtask.getEpicID()));
         }
-        statusChecker(getEpicById(subtask.getEpicID()));
     }
 
     @Override
@@ -238,28 +249,25 @@ public class InMemoryTaskManager implements TaskManager  {
     public void makeNewTask(Task task) {   // новая задача
         if (task != null) {
             if (task.getName() != null || task.getDescription() != null || task.getStatus() != null) {
-
-                try {
-                    if (findIntersection(task) == false) {   // проверяем наличие пересечений!!!
-                        if (getPrioritizedTasks() != null) {
-                            prioritizedTasks.add(task);
-
-                            int uniqueId = makeID();
-                            task.setId(uniqueId);
-                            taskTasks.put(uniqueId, task);   // сохранили объект в хранилище
-                        }
-                    } else {
+                try{
+                    if (findIntersection(task)) {
                         throw new IntersectionException("Конфликт времени исполнения! Задача не может быть добавлена");
                     }
-                } catch (IntersectionException exception) {
-                    System.out.println(exception.getMessage());
+                    } catch (IntersectionException exception) {
+                        System.out.println(exception.getMessage());
+                    }
+                }
+                if (!findIntersection(task)) {   // проверяем наличие пересечений!!!
+                        int uniqueId = makeID();
+                        task.setId(uniqueId);
+                        taskTasks.put(uniqueId, task);   // сохранили объект в хранилище
+                        prioritizedTasks.add(task);
+                }
                 }
             }
-        }
-    }
 
     @Override
-    public Task getTaskById(int idForSearch) {                   //Получение задачи ru.yandex.tasks.Task по идентификатору.
+    public Task getTaskById(int idForSearch) {               //Получение задачи ru.yandex.tasks.Task по идентификатору.
         if (taskTasks.containsKey(idForSearch)) {
             Task tmpTask = taskTasks.get(idForSearch);
             historyManager.add(tmpTask);      // Добавляем объект в хранилище
@@ -271,18 +279,23 @@ public class InMemoryTaskManager implements TaskManager  {
     @Override
     public void updateTask(int idForUpdate, Task newTask)  {   //Обновление задач ru.yandex.tasks.Task
         if (taskTasks.containsKey(idForUpdate) && newTask.getId() == idForUpdate) {
+
+            getPrioritizedTasks().removeIf(obj -> obj.getId() == newTask.getId());
+            prioritizedTasks.removeIf(obj -> obj.getId() == newTask.getId());
+
             try {
-                prioritizedTasks.remove(idForUpdate);
-                getPrioritizedTasks().remove(idForUpdate);
-                if (findIntersection(newTask) == false) {  // проверяем наличие пересечений!!!
-                    prioritizedTasks.add(newTask);
-                    taskTasks.put(idForUpdate, newTask);
-                } else {
-                    throw new IntersectionException("Конфликт времени исполнения! Задача не может быть добавлена");
+                if (findIntersection(newTask)) {
+                    prioritizedTasks.add(getTaskById(idForUpdate));
+                    throw new IntersectionException("Конфликт времени исполнения! Задача не может быть обновлена");
                 }
             } catch (IntersectionException exception) {
                 System.out.println(exception.getMessage());
             }
+
+                if (!findIntersection(newTask)) {  // проверяем наличие пересечений!!!
+                    prioritizedTasks.add(newTask);
+                    taskTasks.put(idForUpdate, newTask);
+                }
         }
     }
     @Override
@@ -290,8 +303,13 @@ public class InMemoryTaskManager implements TaskManager  {
         if (!taskTasks.isEmpty()) {
             taskTasks.clear();
             for (Task prioritizedTask : prioritizedTasks) {
-                if (prioritizedTask.type.equals(Type.TASK)) {
+                if (prioritizedTask.getType().equals(Type.TASK)) {
                     prioritizedTasks.remove(prioritizedTask);
+                }
+            }
+            for (Task prioritizedTask : getPrioritizedTasks()) {
+                if (prioritizedTask.getType().equals(Type.TASK)) {
+                    getPrioritizedTasks().remove(prioritizedTask);
                 }
             }
         }
@@ -353,6 +371,7 @@ public class InMemoryTaskManager implements TaskManager  {
         }
         if (!prioritizedTasks.isEmpty()) {
             prioritizedTasks.clear();
+            getPrioritizedTasks().clear();
         }
     }
     @Override
@@ -362,6 +381,7 @@ public class InMemoryTaskManager implements TaskManager  {
             historyManager.remove(idForDell);
             if (prioritizedTasks.contains(getTaskById(idForDell))) {
                 prioritizedTasks.remove(getTaskById(idForDell));
+                getPrioritizedTasks().remove(getTaskById(idForDell));
             }
         } else if (epicTasks.containsKey(idForDell)) {
             for (Subtask mySubtask : epicTasks.get(idForDell).getMySubtasks()) {
@@ -375,6 +395,7 @@ public class InMemoryTaskManager implements TaskManager  {
             historyManager.remove(idForDell);
             if (prioritizedTasks.contains(getSubTaskById(idForDell))) {
                 prioritizedTasks.remove(getSubTaskById(idForDell));
+                getPrioritizedTasks().remove(getSubTaskById(idForDell));
             }
         }
 
@@ -383,11 +404,6 @@ public class InMemoryTaskManager implements TaskManager  {
     int makeID() {              // генератор id для задач всех типов
         return ++lastID;
     }
-
-//    String toStringForFile(Task task) {
-//        return task.getId() + "," + task.getType() + "," + task.getName() +  "," + task.getStatus() + ","
-//                + task.getDescription() + "," + task.getStartTime()  + "," + task.getDuration();
-//    }
 }
 
 
