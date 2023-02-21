@@ -10,7 +10,7 @@ public class Task {
     private String description;            // описание, в котором раскрываются детали
     private int id;                        // Уникальный идентификационный номер
     private Status status;                 // Статус прогресса работы над задачей
-    Type type;                      // Тип задачи
+    protected Type type;                      // Тип задачи
 
     private LocalDateTime startTime;       // время начала задачи (дата с точностью до дня, часов, минут, секунд)
     private Duration duration;             // прогнозная длительность выполнения (в минутах)

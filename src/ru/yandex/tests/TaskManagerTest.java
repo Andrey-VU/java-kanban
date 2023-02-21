@@ -17,7 +17,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 abstract class TaskManagerTest<T extends TaskManager> {
-    TaskManager manager = Managers.getDefault();
+    T manager = (T) Managers.getDefault();
 
     // ======= ДЛЯ ======= TASK ===================
     @Test
@@ -62,7 +62,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 "01.01.2000--12:00", 3600);
         manager.makeNewTask(taskTest1);
         Task taskTest2 = new Task("Test name", "Test description", 0,
-                Status.NEW, "01.01.2000--12:00", 3600);
+                Status.NEW, "01.03.2000--12:00", 3600);
         manager.makeNewTask(taskTest2);
         manager.clearTask();
         assertNull(manager.getTaskById(taskTest1.getId()), "К сожалению, Task объект не удалён");
@@ -229,7 +229,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Epic epicTest = new Epic("Epic name", "Epic description", 0,
                 Status.NEW);
         Subtask subtaskTest = new Subtask("Subtask name", "Subtask description",
-                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
+                0, Status.NEW, epicTest.getId(), "01.03.2000--12:00", 3600);
         manager.makeNewTask(taskTest);
         manager.makeNewEpic(epicTest);
         manager.makeNewSubtask(subtaskTest);
@@ -281,7 +281,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Epic epicTest = new Epic("Epic name", "Epic description", 0,
                 Status.NEW);
         Subtask subtaskTest1 = new Subtask("Subtask name", "Subtask description",
-                0, Status.NEW, epicTest.getId(), "01.01.2000--12:00", 3600);
+                0, Status.NEW, epicTest.getId(), "01.04.2000--12:00", 3600);
 
         manager.makeNewTask(taskTest);
         manager.makeNewEpic(epicTest);
