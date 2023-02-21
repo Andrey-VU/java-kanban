@@ -17,7 +17,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 abstract class TaskManagerTest<T extends TaskManager> {
-    T manager = (T) Managers.getDefault();
+   T manager;
 
     // ======= ДЛЯ ======= TASK ===================
     @Test

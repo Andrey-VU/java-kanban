@@ -29,6 +29,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest {
 
     @BeforeEach
     public void beforeEach() throws IOException {
+        manager = Managers.getFileBackedManager();
         inMemoryManager = Managers.getDefault();
         recoveredFromFile = Managers.getFileBackedManager();
         FileBackedTasksManager.fileIn = new File("storageTestIn.csv");
@@ -54,6 +55,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest {
 
     @AfterEach
     public void afterEach() throws IOException {
+        manager.dellThemAll();
         inMemoryManager.dellThemAll();
         recoveredFromFile.dellThemAll();
         if (recoveredFromFile.getHistory() != null) {
