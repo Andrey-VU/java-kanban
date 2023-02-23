@@ -2,10 +2,7 @@ package ru.yandex.tmanager;
 import ru.yandex.exceptions.ManagerSaveException;
 import ru.yandex.tasks.*;
 import java.io.*;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-
-import static ru.yandex.tasks.Type.EPIC;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     public static File fileIn;
@@ -32,7 +29,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             recoveredFromFile.getTaskById(1);
             recoveredFromFile.getSubTaskById(5);
         }
-
     }
 
     private void save() throws ManagerSaveException {             // сохранение изменений в файл
@@ -52,7 +48,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             bw.write("id,type,name,status,description,startTime,duration,epic");
             bw.newLine();
             for (Task value : tmpStorage.values()) {
-
                 bw.write(toStringForFile(value));
                 bw.newLine();
             }
@@ -133,9 +128,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     static Task fromString(String s) {         // создание задачи из строки
         String[] tmpArray = s.split(",");
-        for (int i = 0; i < tmpArray.length; i++) {
+//        for (int i = 0; i < tmpArray.length; i++) {
             if (tmpArray.length == 7) {
-                //if (Type.valueOf(tmpArray[1]).equals("TASK")) {
                 Task taskFromFile = new Task(tmpArray);
                 return taskFromFile;
             } else if (tmpArray.length == 8) {
@@ -145,8 +139,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 Epic taskFromFile = new Epic(Type.EPIC, tmpArray);
                 return taskFromFile;
             }
-        }
-        return null;
+//        }
+//        return null;
     }
 
     static List<Integer> historyFromString(String value) {
@@ -167,11 +161,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 task.getStartTime().format(task.getFormatter()) + "," + task.getDuration().toMinutes();
         return task.getId() + "," + task.getType() + "," + task.getName() + "," + task.getStatus() + ","
                     + task.getDescription() + "," + isStartTimeAndDuration + task.getEpicId();
-
         }
 
-    // ========================================= ПЕРЕОПРЕДЕЛЁННЫЕ МЕТОДЫ =============================
-
+// ========================================= ПЕРЕОПРЕДЕЛЁННЫЕ МЕТОДЫ =============================
 
     @Override
     public List<Task> getPrioritizedTasks() {
