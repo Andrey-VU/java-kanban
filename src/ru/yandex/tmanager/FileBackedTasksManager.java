@@ -5,24 +5,46 @@ import java.io.*;
 import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    public static File fileIn;
-    public static File fileOut;
+    private final String fileIn;
+    private final String fileOut;
 
-    public FileBackedTasksManager() {
+    public FileBackedTasksManager(String pathIn, String pathOut) {
+        super();
+        this.fileIn = pathIn;
+        this.fileOut = pathOut;
         super.prioritizedTasks = new TreeSet<>(comparator);
     }
 
+    public FileBackedTasksManager(String pathInOut) {
+        super();
+        this.fileIn = pathInOut;
+        this.fileOut = fileIn;
+        super.prioritizedTasks = new TreeSet<>(comparator);
+    }
+
+    public FileBackedTasksManager() {
+        super();
+        super.prioritizedTasks = new TreeSet<>(comparator);
+        this.fileIn = "AbstractStorage.csv";
+        this.fileOut = fileIn;
+    }
+
+    public String getFileOut() {
+        return fileOut;
+    }
+
+    //public String getFileIn() { return fileIn; }
+
+
     public static void main(String[] args) throws IOException {
-        fileIn = new File("storage.csv");
-        fileOut = new File("storage.csv");
-        TaskManager recoveredFromFile = loadFromFile(fileIn);
+        TaskManager recoveredFromFile = loadFromFile("storage.csv", "storage_OUT_NEW.csv");
 
         if (recoveredFromFile != null) {
             // recoveredFromFile.dellThemAll();
             recoveredFromFile.getSubTaskById(3);
             recoveredFromFile.dellTaskById(3);
             recoveredFromFile.getTaskById(6);
-           // recoveredFromFile.dellTaskById(6);
+            recoveredFromFile.dellTaskById(6);
             recoveredFromFile.getSubTaskById(4);
             recoveredFromFile.getEpicById(2);
             recoveredFromFile.getTaskById(7);
@@ -31,8 +53,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private void save() throws ManagerSaveException {             // сохранение изменений в файл
-        File fileForSave = fileOut;
+    @Override
+    public void save() throws ManagerSaveException {             // сохранение изменений в файл
+        File fileForSave = new File(getFileOut());                // OUT
         Map<Integer, Task> tmpStorage = new HashMap<>();
         for (Task value :  getTaskTasks().values()) {
             tmpStorage.put(value.getId(), value);
@@ -75,54 +98,57 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     // =============================== ЗАГРАЗКА ИЗ ФАЙЛА =====================================
-    public static FileBackedTasksManager loadFromFile(File file) throws IOException {
-        TaskManager loadedFromFile = Managers.getFileBackedManager();
+    public static FileBackedTasksManager loadFromFile(String fileIn, String fileOut) throws IOException {
+        TaskManager loadedFromFile = new FileBackedTasksManager(fileIn, fileOut);
+
         List<String> tmp = new ArrayList<>();                // для хранения списка строк из файла
         String isHistory = "";
-        try (FileReader reader = new FileReader(file); BufferedReader br = new BufferedReader(reader)) {
-            while (br.ready()) {
-                String line = isHistory + br.readLine();
-                if (!line.isBlank()) {
-                    tmp.add(line);
-                } else {
-                    isHistory = "It is history:";
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Произошла ошибка во время чтения файла.");
-        }
 
-        for (int i = 1; i < tmp.size(); i++) {
-            if (tmp != null) {
-                if (!tmp.get(i).isBlank() && !tmp.get(i).contains("It is history:"))  {
-                    String[] tmpArray = tmp.get(i).split(",");    // строковый массив после деления строки по ","
-                    switch (Type.valueOf(tmpArray[1])) {
-                        case TASK:
-                            Task tmpTask = fromString(tmp.get(i));
-                            loadedFromFile.makeNewTask(tmpTask);
-                            break;
-                        case EPIC:
-                            Epic tmpEpic = (Epic) fromString(tmp.get(i));
-                            loadedFromFile.makeNewEpic(tmpEpic);
-                            break;
-                        case SUBTASK:
-                            Subtask tmpSubtask = (Subtask) fromString(tmp.get(i));
-                            loadedFromFile.makeNewSubtask(tmpSubtask);
-                            break;
+        try (FileReader reader = new FileReader(fileIn); BufferedReader br = new BufferedReader(reader)) {
+                while (br.ready()) {
+                    String line = isHistory + br.readLine();
+                    if (!line.isBlank()) {
+                        tmp.add(line);
+                    } else {
+                        isHistory = "It is history:";
                     }
-                } else if (tmp.get(i).isBlank()) {
-                    continue;
-                } else {
+                }
+            } catch (IOException e) {
+                System.out.println("Произошла ошибка во время чтения файла.");
+            }
 
-                    String historyIdsFromTask = tmp.get(i).substring(isHistory.length());
-                    for (Integer id : historyFromString(historyIdsFromTask)) {
-                                loadedFromFile.getTaskById(id);
-                                loadedFromFile.getEpicById(id);
-                                loadedFromFile.getSubTaskById(id);
+            for (int i = 1; i < tmp.size(); i++) {
+                if (tmp != null) {
+                    if (!tmp.get(i).isBlank() && !tmp.get(i).contains("It is history:")) {
+                        String[] tmpArray = tmp.get(i).split(",");  //строковый массив после деления строки по ","
+                        switch (Type.valueOf(tmpArray[1])) {
+                            case TASK:
+                                Task tmpTask = fromString(tmp.get(i));
+                                loadedFromFile.makeNewTask(tmpTask);
+                                break;
+                            case EPIC:
+                                Epic tmpEpic = (Epic) fromString(tmp.get(i));
+                                loadedFromFile.makeNewEpic(tmpEpic);
+                                break;
+                            case SUBTASK:
+                                Subtask tmpSubtask = (Subtask) fromString(tmp.get(i));
+                                loadedFromFile.makeNewSubtask(tmpSubtask);
+                                break;
+                        }
+                    } else if (tmp.get(i).isBlank()) {
+                        continue;
+                    } else {
+
+                        String historyIdsFromTask = tmp.get(i).substring(isHistory.length());
+                        for (Integer id : historyFromString(historyIdsFromTask)) {
+                            loadedFromFile.getTaskById(id);
+                            loadedFromFile.getEpicById(id);
+                            loadedFromFile.getSubTaskById(id);
                         }
                     }
                 }
             }
+
         return (FileBackedTasksManager) loadedFromFile;
     }
 
@@ -163,7 +189,27 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     + task.getDescription() + "," + isStartTimeAndDuration + task.getEpicId();
         }
 
-// ========================================= ПЕРЕОПРЕДЕЛЁННЫЕ МЕТОДЫ =============================
+        // ========================================= ПЕРЕОПРЕДЕЛЁННЫЕ МЕТОДЫ =============================
+
+    @Override
+    public void dellAllSubtasks() throws IOException, ManagerSaveException {
+        super.dellAllSubtasks();
+    }
+
+    @Override
+    public void dellAllTasks() throws IOException, ManagerSaveException {
+        super.dellAllTasks();
+    }
+
+    @Override
+    public ArrayList<Epic> getListAllEpics() {
+        return super.getListAllEpics();
+    }
+
+    @Override
+    public List<Subtask> getListAllSubtasks() {
+        return super.getListAllSubtasks();
+    }
 
     @Override
     public List<Task> getPrioritizedTasks() {
@@ -258,8 +304,23 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public ArrayList<Task> getListAllTasksFromTask() {
-        return super.getListAllTasksFromTask();
+    public boolean findIntersection(Task newTask) {
+        return super.findIntersection(newTask);
+    }
+
+    @Override
+    public HashMap<Integer, Epic> getEpicTasks() {
+        return super.getEpicTasks();
+    }
+
+    @Override
+    public HashMap<Integer, Subtask> getSubtaskTasks() {
+        return super.getSubtaskTasks();
+    }
+
+    @Override
+    public HashMap<Integer, Task> getTaskTasks() {
+        return super.getTaskTasks();
     }
 
     @Override
@@ -274,7 +335,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public ArrayList<Object> getListAllTasks() {
+    public ArrayList<Task> getListAllTasks() {
         return super.getListAllTasks();
     }
 
