@@ -13,7 +13,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest {
 
     @BeforeEach
     public void beforeEach() throws IOException {
-        manager = Managers.getDefault();
+        manager = Managers.getInMemoryTaskManager();
     }
 
 }

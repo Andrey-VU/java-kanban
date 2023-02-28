@@ -1,5 +1,4 @@
 package ru.yandex.http;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
@@ -28,7 +27,8 @@ public class KVServer {
 	}
 
 	private void load(HttpExchange h) {
-		// TODO Добавьте получение значения по ключу
+		// TODO Добавьте получение значения по ключу KVServer
+		//  дописываем 1 метод - load - по аналогии с другими методами, достаем из мапы data.get(key)
 	}
 
 	private void save(HttpExchange h) throws IOException {

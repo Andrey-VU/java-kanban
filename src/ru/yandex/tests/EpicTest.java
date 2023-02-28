@@ -13,7 +13,7 @@ class EpicTest {
 
     @BeforeEach                      // Перед каждым тестом заводим новый Epic
     public void beforeEach() throws IOException {
-        manager = Managers.getDefault();
+        manager = Managers.getInMemoryTaskManager();
         epicTest = new Epic("Epic name", "Epic description", 0,
                 Status.NEW);
         manager.makeNewEpic(epicTest);

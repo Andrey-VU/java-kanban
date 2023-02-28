@@ -1,4 +1,5 @@
 package ru.yandex.tasks;
+import ru.yandex.tmanager.adapter.LocalDateTimeAdapter;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,11 +12,8 @@ public class Task {
     private int id;                        // Уникальный идентификационный номер
     private Status status;                 // Статус прогресса работы над задачей
     protected Type type;                      // Тип задачи
-
     private LocalDateTime startTime;       // время начала задачи (дата с точностью до дня, часов, минут, секунд)
     private Duration duration;             // прогнозная длительность выполнения (в минутах)
-
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy--HH:mm");
 
     public Task(String name, String description, Integer id, Status status,
                 String startTime, long minutes) {
@@ -25,7 +23,7 @@ public class Task {
         this.id = id;
         this.status = status;
         type = Type.TASK;
-        this.startTime = LocalDateTime.parse(startTime, formatter);
+        this.startTime = LocalDateTime.parse(startTime, LocalDateTimeAdapter.formatter);
         this.duration = Duration.ofMinutes(minutes);
     }
 
@@ -35,7 +33,7 @@ public class Task {
         this.name = fromArray[2];
         this.status = Status.valueOf(fromArray[3]);
         this.description = fromArray[4];
-        this.startTime = LocalDateTime.parse(fromArray[5], formatter);
+        this.startTime = LocalDateTime.parse(fromArray[5], LocalDateTimeAdapter.formatter);
         this.duration = Duration.ofMinutes(Long.parseLong(fromArray[6]));
     }
 
@@ -74,7 +72,7 @@ public class Task {
     }
 
     public DateTimeFormatter getFormatter() {
-        return formatter;
+        return LocalDateTimeAdapter.formatter;
     }
 
     public Duration getDuration() {

@@ -11,7 +11,6 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) throws IOException, ManagerSaveException {
         TaskManager manager = Managers.getInMemoryTaskManager();
-
         System.out.println("Поехали!");
 
         //Создайте 2 задачи, один эпик с 2 подзадачами, а другой эпик с 1 подзадачей

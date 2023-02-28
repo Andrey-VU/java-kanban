@@ -243,7 +243,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void shouldGetStartTime() throws IOException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy--HH:mm");
-        TaskManager manager = Managers.getDefault();
+        TaskManager manager = Managers.getInMemoryTaskManager();
         Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
                 "01.01.2000--12:00", 3600);
         Epic epicTest = new Epic("Epic name", "Epic description", 0,

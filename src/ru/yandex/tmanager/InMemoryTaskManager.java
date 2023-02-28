@@ -1,7 +1,9 @@
 package ru.yandex.tmanager;
 import ru.yandex.exceptions.IntersectionException;
+import ru.yandex.exceptions.ManagerSaveException;
 import ru.yandex.tasks.*;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.Comparator;
 
@@ -60,6 +62,11 @@ public class InMemoryTaskManager implements TaskManager  {
     @Override
     public List<Task> getPrioritizedTasks() {
         return new ArrayList<>(prioritizedTasks);
+    }
+
+    @Override
+    public void save() {
+
     }
 
     public HashMap<Integer, Epic> getEpicTasks() {
@@ -181,6 +188,19 @@ public class InMemoryTaskManager implements TaskManager  {
     }
 
     @Override
+    public void dellAllSubtasks() throws IOException, ManagerSaveException {
+        if (!subtaskTasks.isEmpty()) {
+            for (Integer id : subtaskTasks.keySet()) {
+                if (subtaskTasks.get(id) != null) {
+                    dellTaskById(id);
+                    historyManager.remove(id);     // удаление задачи из истории просмотров
+                }
+                subtaskTasks.clear();
+            }
+        }
+    }
+
+    @Override
     public void statusChecker(Epic newEpic) {   // метод проверки и пересчёта статусов для Эпиков
         int counterNEW = 0;
         int counterINPROGRESS = 0;
@@ -207,6 +227,7 @@ public class InMemoryTaskManager implements TaskManager  {
             newEpic.setStatus(Status.IN_PROGRESS);
         }
     }
+
 
     // МЕТОДЫ ДЛЯ TASK   =============================================================================================
     @Override
@@ -263,18 +284,20 @@ public class InMemoryTaskManager implements TaskManager  {
             }
         }
     }
+
     @Override
-    public ArrayList<Task> getListAllTasksFromTask() {          //Получение списка всех ru.yandex.tasks.Task задач
-        ArrayList<Task> tasksList = new ArrayList<Task>();
+    public void dellAllTasks() throws IOException, ManagerSaveException {
         if (!taskTasks.isEmpty()) {
-            for (Task value : taskTasks.values()) {
-                tasksList.add(value);
+            for (Integer id : taskTasks.keySet()) {
+                if (taskTasks.get(id) != null) {
+                    dellTaskById(id);
+                    historyManager.remove(id);     // удаление задачи из истории просмотров
+                }
+                taskTasks.clear();
             }
-            return tasksList;
-        } else {
-            return null;
         }
     }
+
     // МЕТОДЫ ДЛЯ ЗАДАЧ ВСЕХ типов сразу  ===========================================================================
     @Override
     public ArrayList<Task> getHistory() {
@@ -290,25 +313,41 @@ public class InMemoryTaskManager implements TaskManager  {
         }
     }
     @Override
-    public ArrayList<Object> getListAllTasks() {                      //Получение списка всех задач всех типов
-        ArrayList<Object> taskEpicSubtaskList = new ArrayList<Object>();
+    public ArrayList<Task> getListAllTasks() {                      //Получение списка всех задач всех типов
+        ArrayList tasksList = new ArrayList<Task>();
         if (!taskTasks.isEmpty()) {
             for (Integer id : taskTasks.keySet()) {
-                taskEpicSubtaskList.add(taskTasks.get(id));
+                tasksList.add(taskTasks.get(id));
             }
+            return tasksList;
         }
+        return null;
+    }
+
+    @Override
+    public ArrayList<Epic> getListAllEpics() {
+        ArrayList epicsList = new ArrayList<Epic>();
         if (!epicTasks.isEmpty()) {
             for (Integer id : epicTasks.keySet()) {
-                taskEpicSubtaskList.add(epicTasks.get(id));
+                epicsList.add(epicTasks.get(id));
             }
+            return epicsList;
         }
+        return null;
+    }
+
+    @Override
+    public List<Subtask> getListAllSubtasks() {
+        ArrayList subtasksList = new ArrayList<Epic>();
         if (!subtaskTasks.isEmpty()) {
             for (Integer id : subtaskTasks.keySet()) {
-                taskEpicSubtaskList.add(subtaskTasks.get(id));
+                subtasksList.add(subtaskTasks.get(id));
             }
+            return subtasksList;
         }
-        return taskEpicSubtaskList;
+        return null;
     }
+
     @Override
     public void dellThemAll()  {    //Удаление всех задач.
         if (!taskTasks.isEmpty()) {
