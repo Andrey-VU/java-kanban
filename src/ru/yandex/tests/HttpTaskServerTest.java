@@ -70,10 +70,8 @@ public class HttpTaskServerTest {
         Task testTaskHttpNew = new Task("newForHTTP","ServerMade", 0, Status.NEW,
                 "01.01.1917--06:00", 3600);
         fileManager.makeNewTask(testTaskHttpNew);
-        Task testTaskbeforeSending = fileManager.getTaskById(testTaskHttpNew.getId());
-        // newForHTTP,ServerMade,0,NEW,01.01.2000--12:00,3600"
-        //  "7,TASK,newForHTTP,NEW,ServerMade,01.01.1000--12:00,3600";
-        // создаём запрос серверу на создание новой Task
+        Task testTaskBeforeSending = fileManager.getTaskById(testTaskHttpNew.getId());
+
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
         final HttpRequest.BodyPublisher bodyNewTask =
                 HttpRequest.BodyPublishers.ofString(gson.toJson(testTaskHttpNew));
@@ -84,17 +82,18 @@ public class HttpTaskServerTest {
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         HttpResponse<String> response = client.send(requestNewTask, handler);
 
-        System.out.println("Вот какое тело нам вернули по запросу создания новой Task: " + response.body());
-        Assertions.assertEquals("Новый Task создан!",  response.body(),
+        //System.out.println("Вот какое тело нам вернули по запросу создания новой Task: " + response.body());
+        Assertions.assertEquals("Новый Task " + testTaskBeforeSending.toString()
+                        + " создан!",  response.body(),
                 "Новая задача Task не создана, либо не доставлена обратно клиенту" );
     }
 
-    @Test
-    public void shouldUpdateTask() {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
-        final HttpRequest.BodyPublisher bodyUpdate = HttpRequest.BodyPublishers.ofString("1");
-        HttpRequest requestUpdate = HttpRequest.newBuilder().uri(urlWithId).POST(bodyUpdate).build();
-    }
+//    @Test
+//    public void shouldUpdateTask() {
+//        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
+//        final HttpRequest.BodyPublisher bodyUpdate = HttpRequest.BodyPublishers.ofString("1");
+//        HttpRequest requestUpdate = HttpRequest.newBuilder().uri(urlWithId).POST(bodyUpdate).build();
+//    }
 
     @Test
     public void shouldGetResponseBodyFromServer() throws IOException, InterruptedException {

@@ -3,6 +3,7 @@ import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import com.google.gson.Gson;
@@ -20,17 +21,14 @@ import ru.yandex.tmanager.adapter.LocalDateTimeAdapter;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.util.regex.Pattern;
+
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class HttpTaskServer {                      // слушать порт 8080, принимать запросы
-//    //private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+    private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     private TaskManager fileManager;
     private static final int PORT = 8080;
@@ -157,56 +155,89 @@ public class HttpTaskServer {                      // слушать порт 80
                         break;
 
                     case POST_TASK:
+                        InputStream inputStreamForTask = exchange.getRequestBody();
+                        String bodyForNewOrUpdate = new String(inputStreamForTask.readAllBytes(), DEFAULT_CHARSET);
                         if (exchange.getRequestURI().getQuery() == null) {         // создание новой задачи
-                            String bodyForNew = String.valueOf(exchange.getRequestBody());   // получение тела запроса
-
-                            //System.out.println;
-                            if (bodyForNew != null) {
-                                Task newTask = gson.fromJson(bodyForNew, Task.class); // получаем Task в виде строки
+                            if (bodyForNewOrUpdate != null) {
+                                Task newTask = gson.fromJson(bodyForNewOrUpdate, Task.class); // получаем Task в виде строки
                                 fileManager.makeNewTask(newTask);
-                                response = "Новый Task создан!";
+                                response = "Новый Task " + fileManager.getTaskById(newTask.getId()).toString()
+                                        + " создан!";
                             }
-                        } else {              // обновление задачи по id
-                            String bodyForUpdate = String.valueOf(exchange.getRequestBody());
-                            String taskFromGson = gson.fromJson(bodyForUpdate, String.class);
-                            System.out.println(taskFromGson);
-                            //fileManager.updateTask(id, task);
-                            response = "Task c Id " + id + " обновлён!";
+                        } else {                                                     // обновление задачи по id
+                            if (bodyForNewOrUpdate != null) {
+                                Task updateTask = gson.fromJson(bodyForNewOrUpdate, Task.class);
+                                fileManager.updateTask(id, updateTask);
+                                response = "Task " +  fileManager.getTaskById(id).toString()
+                                        + " обновлён!";
+                            }
                         }
                         break;
-//                    case POST_SUBTASK:                  // и для новой подзадачи и для обновления старой
-//                        handlePostSubtask(exchange);
-//                        break;
-//                    case POST_EPIC:
-//                        handlePostEpic(exchange);
-//                        break;
+                    case POST_SUBTASK:                     // и для новой подзадачи и для обновления старой
+                        InputStream inputStreamForSubtask = exchange.getRequestBody();
+                        String bodyForNewOrUpdateSub = new String(inputStreamForSubtask.readAllBytes(), DEFAULT_CHARSET);
+                        if (exchange.getRequestURI().getQuery() == null) {         // создание новой задачи
+                            if (bodyForNewOrUpdateSub != null) {
+                                Subtask newSubtask = gson.fromJson(bodyForNewOrUpdateSub, Subtask.class); // получаем Task в виде строки
+                                fileManager.makeNewSubtask(newSubtask);
+                                response = "Новый Subtask " + fileManager.getSubTaskById(newSubtask.getId()).toString()
+                                        + " создан!";
+                            }
+                        } else {                                                     // обновление задачи по id
+                            if (bodyForNewOrUpdateSub != null) {
+                                Subtask updateSubtask = gson.fromJson(bodyForNewOrUpdateSub, Subtask.class);
+                                fileManager.updateTask(id, updateSubtask);
+                                response = "Subtask " +  fileManager.getSubTaskById(id).toString()
+                                        + " обновлён!";
+                            }
+                        }
+                        break;
+                    case POST_EPIC:
+                        InputStream inputStreamForEpic = exchange.getRequestBody();
+                        String bodyForNewOrUpdateEpic = new String(inputStreamForEpic.readAllBytes(), DEFAULT_CHARSET);
+                        if (exchange.getRequestURI().getQuery() == null) {         // создание новой задачи
+                            if (bodyForNewOrUpdateEpic != null) {
+                                Epic newEpic = gson.fromJson(bodyForNewOrUpdateEpic, Epic.class); // получаем Task в виде строки
+                                fileManager.makeNewEpic(newEpic);
+                                response = "Новый Epic " + fileManager.getEpicById(newEpic.getId()).toString()
+                                        + " создан!";
+                            }
+                        } else {
+                            if (bodyForNewOrUpdateEpic != null) {
+                                Epic updateEpic = gson.fromJson(bodyForNewOrUpdateEpic, Epic.class);
+                                fileManager.updateEpic(id, updateEpic);
+                                response = "Epic " + fileManager.getEpicById(id).toString()
+                                        + " обновлён!";
+                            }
+                        }
+                        break;
 
-//                    case DELETE_All:
-//                        System.out.println("Началась обработка запроса на удаление всех задач");
-//                        handleDeleteAll(exchange);
-//                        break;
-//                    case DELETE_TASK:
-//                    case DELETE_SUBTASK:
-//                    case DELETE_EPIC:
-//                        System.out.println("Началась обработка запроса на удаление объекта по Id");
-//                        handleDeleteTask(id, exchange);
-//                        break;
-//                    case DELETE_TASKS:
-//                        System.out.println("Началась обработка запроса на удаление всех задач Task");
-//                        handleDeleteTasks(exchange);
-//                        break;
-//                    case DELETE_SUBTASKS:
-//                        System.out.println("Началась обработка запроса на удаление всех задач Subtask");
-//                        handleDellSubtasks(exchange);
-//                        break;
-//                    case DELETE_EPICS:
-//                        System.out.println("Началась обработка запроса на удаление всех задач Epic");
-//                        handleDellEpics(exchange);
-//                        break;
-//                    case ERROR:
-//                        System.out.println("Получен некорректный запрос метода: " + method);
-//                        exchange.sendResponseHeaders(405, 0);
-//                        break;
+                    case DELETE_All:
+                        System.out.println("Началась обработка запроса на удаление всех задач");
+                        fileManager.dellThemAll();
+                        break;
+                    case DELETE_TASK:
+                    case DELETE_SUBTASK:
+                    case DELETE_EPIC:
+                        System.out.println("Началась обработка запроса на удаление объекта по Id");
+                         fileManager.dellTaskById(id);
+                        break;
+                    case DELETE_TASKS:
+                        System.out.println("Началась обработка запроса на удаление всех задач Task");
+                        fileManager.dellAllTasks();
+                        break;
+                    case DELETE_SUBTASKS:
+                        System.out.println("Началась обработка запроса на удаление всех задач Subtask");
+                        fileManager.dellAllSubtasks();
+                        break;
+                    case DELETE_EPICS:
+                        System.out.println("Началась обработка запроса на удаление всех задач Epic");
+                        fileManager.dellAllEpic();
+                        break;
+                    case ERROR:
+                        System.out.println("Получен некорректный запрос метода: " + method);
+                        exchange.sendResponseHeaders(405, 0);
+                        break;
                 }
 
                 // отправить ответ клиенту
