@@ -249,6 +249,19 @@ public class HttpTaskServer {                      // слушать порт 80
             } finally { exchange.close();}
         }
 
+//        OutputStream getResponseBody()
+//        Через этот метод определяется, что вернётся клиенту в теле ответа.
+//        Метод getResponseBody() возвращает объект OutputStream, в который нужно записать массив байтов.
+//        После того как байты записаны, у объекта OutputStream нужно вызвать метод close().
+//        OutputStream os = httpExchange.getResponseBody();
+//os.write("Тело ответа в виде простого текста".getBytes(StandardCharsets.UTF_8));
+//os.close();
+//        Или воспользоваться try-with-resources, как мы делали это выше.
+//try (OutputStream os = httpExchange.getResponseBody()) {
+//            os.write("Тело ответа в виде простого текста".getBytes());
+//        }
+
+
         private int parseQueryId(String query) {
             try {
                 return Integer.parseInt(query);
