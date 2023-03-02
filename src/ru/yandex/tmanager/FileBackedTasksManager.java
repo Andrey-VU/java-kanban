@@ -36,7 +36,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     //public String getFileIn() { return fileIn; }
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         TaskManager recoveredFromFile = loadFromFile("storage.csv", "storage_OUT_NEW.csv");
 
         if (recoveredFromFile != null) {

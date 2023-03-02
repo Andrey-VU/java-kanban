@@ -1,17 +1,21 @@
 import ru.yandex.exceptions.ManagerSaveException;
-import ru.yandex.tasks.Epic;
-import ru.yandex.tasks.Subtask;
-import ru.yandex.tasks.Task;
-import ru.yandex.tasks.Status;
+import ru.yandex.http.KVServer;
+import ru.yandex.tmanager.HttpTaskManager;
 import ru.yandex.tmanager.Managers;
-import ru.yandex.tmanager.TaskManager;
 
 import java.io.IOException;
 
 public class Main {
-    public static void main(String[] args) throws IOException, ManagerSaveException {
-        TaskManager manager = Managers.getInMemoryTaskManager();
+
+    public static void main(String[] args) throws IOException, ManagerSaveException, InterruptedException {
+        new KVServer().start();
+        HttpTaskManager manager = Managers.getDefault();
+        manager.setKey("Artem");
         System.out.println("Поехали!");
+        manager.save();
+        manager.loadFromKVServer();
+
+
 
         //Создайте 2 задачи, один эпик с 2 подзадачами, а другой эпик с 1 подзадачей
 //        Task taskTest1 = new Task("Пробежка", "не менее 30 минут и не менее 5 км",

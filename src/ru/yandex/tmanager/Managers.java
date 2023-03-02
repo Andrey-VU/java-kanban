@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import ru.yandex.tmanager.adapter.LocalDateTimeAdapter;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 public class Managers {
@@ -19,11 +20,9 @@ public class Managers {
     public static HistoryManager getDefaultHistory() {
         return new InMemoryHistoryManager();
     }
-
-
-    public static TaskManager getDefault(String path) { return new HttpTaskManager(path);}
-    public static TaskManager getDefault(String s, String s1) { return new HttpTaskManager(s, s1);}
-
+    public static HttpTaskManager getDefault() throws IOException, InterruptedException {
+        return new HttpTaskManager("http://localhost:8078/" );
+    }
 
     public static Gson getGson() {
         Gson gson = new GsonBuilder()

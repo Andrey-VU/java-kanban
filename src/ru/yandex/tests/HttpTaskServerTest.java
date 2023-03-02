@@ -24,7 +24,7 @@ public class HttpTaskServerTest {
     private final URI urlForHistory = URI.create("http://localhost:8080/tasks/history");
     private Gson gson;
 
-    public HttpTaskServerTest() throws IOException {
+    public HttpTaskServerTest() throws IOException, InterruptedException {
     }
 
     @BeforeEach

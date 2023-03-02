@@ -1,11 +1,9 @@
 package ru.yandex.http;
 import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -26,10 +24,35 @@ public class KVServer {
 		server.createContext("/load", this::load);
 	}
 
-	private void load(HttpExchange h) {
-		// TODO Добавьте получение значения по ключу KVServer
-		//  дописываем 1 метод - load - по аналогии с другими методами, достаем из мапы data.get(key)
+	private void load(HttpExchange h) throws IOException {
+		try {
+
+			if (!hasAuth(h)) {
+				System.out.println("Запрос неавторизован, нужен параметр в query API_TOKEN со значением апи-ключа");
+				h.sendResponseHeaders(403, 0);
+				return;
+			}
+			if ("GET".equals(h.getRequestMethod())) {
+				String key = h.getRequestURI().getPath().substring("/load/".length());
+				if (key.isEmpty()) {
+					System.out.println("Key для сохранения пустой. key указывается в пути: /load/{key}");
+					h.sendResponseHeaders(400, 0);
+					return;
+				}
+				String response;                                    // форма для ответа
+				if (data.containsKey(key) && data.get(key) != null) {
+					String dataFromServerStorage = data.get(key);       // данные, получаемые из хранилища по ключу
+					response = dataFromServerStorage;
+					// данные, которые возвращаем клиенту
+					sendText(h, response);
+				}
+			}
+		} finally {
+			h.close();
+		}
 	}
+
+	// проверки: есть ли у
 
 	private void save(HttpExchange h) throws IOException {
 		try {

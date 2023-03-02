@@ -1,29 +1,43 @@
 package ru.yandex.tmanager;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import ru.yandex.exceptions.ManagerSaveException;
 import ru.yandex.http.KVTaskClient;
+import java.io.IOException;
 
 public class HttpTaskManager extends FileBackedTasksManager {
-    private static String fileIn;         // принимать URL к серверу KVServer
-    private static String fileOut;
-    KVTaskClient kvTaskClient;
+    private final KVTaskClient kvTaskClient;
+    private String key;
+    private final Gson gson;
 
-    public HttpTaskManager(String pathIn, String pathOut) { super(pathIn, pathOut); }
-    public HttpTaskManager(String path) {
-        super(path);
+    public HttpTaskManager(String urlServer) throws IOException, InterruptedException {
+        super();
+        kvTaskClient = new KVTaskClient(urlServer);
+        gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .create();
     }
-
-    //
-//    Вам нужно заменить вызовы сохранения состояния в файлах на вызов клиента.
-//    В конце обновите статический метод getDefault() в утилитарном классе Managers,
-//    чтобы он возвращал HttpTaskManager.
 
     @Override
     public void save() throws ManagerSaveException {
-        super.save();
+        kvTaskClient.put(key, gson.toJson("this"));
     }
 
-//    public TaskManager loadFromKVServer() throws IOException {
-//        //TaskManager loadedFromFile = Managers.getFileBackedManager();
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public TaskManager loadFromKVServer() throws IOException, InterruptedException {
+        TaskManager loadedFromKVServer = Managers.getDefault();
+        String response = kvTaskClient.load(key);
+        System.out.println(response);
+
+        // распарсить response
+
 //        List<String> tmp = new ArrayList<>();                // для хранения списка строк из файла
 //        String isHistory = "";
 //        try (FileReader reader = new FileReader(getFileIn()); BufferedReader br = new BufferedReader(reader)) {
@@ -71,9 +85,9 @@ public class HttpTaskManager extends FileBackedTasksManager {
 //            }
 //        }
 //        return (FileBackedTasksManager) loadedFromFile;
-//    }
-
-
+//
+        return null;
+    }
 }
 
 /*
@@ -105,3 +119,8 @@ public class HttpTaskManager extends FileBackedTasksManager {
     // 2. Сохранение и выгрузка данных
 
 // HttpTaskServer -> HttpTaskManager -> KVTaskClient -> KVServer
+
+//    public HttpTaskManager(String pathIn, String pathOut) throws IOException, InterruptedException {
+//        super(pathIn, pathOut);
+//        kvTaskClient = new KVTaskClient("newToken");
+//    }

@@ -1,5 +1,4 @@
 package ru.yandex.http;
-import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -9,14 +8,10 @@ import java.net.InetSocketAddress;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpHandler;
 import ru.yandex.tasks.Epic;
-import ru.yandex.tasks.Status;
 import ru.yandex.tasks.Subtask;
 import ru.yandex.tasks.Task;
-import ru.yandex.tmanager.FileBackedTasksManager;
-import ru.yandex.tmanager.HttpTaskManager;
 import ru.yandex.tmanager.Managers;
 import ru.yandex.tmanager.TaskManager;
-import ru.yandex.tmanager.adapter.LocalDateTimeAdapter;
 
 
 import java.io.IOException;
@@ -30,24 +25,23 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class HttpTaskServer {                      // слушать порт 8080, принимать запросы
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
-    private TaskManager fileManager;
+    private TaskManager httpManager;
     private static final int PORT = 8080;
     private KVTaskClient client;
     private HttpServer httpServer;
-    private TaskManager httpManager;
     private Gson gson;
 
-    public HttpTaskServer() throws IOException {
+        public HttpTaskServer() throws IOException, InterruptedException {    // сюда может приходить пользовательский,
+                                                // менеджер со своими данными
         gson = Managers.getGson();
-        fileManager = FileBackedTasksManager.loadFromFile("storageTestIn.csv",
-                "firstTestHttpOut.csv");
-        httpManager = Managers.getDefault("httpStorage.csv");
+        httpManager = Managers.getDefault();   // этот менеджер будет равен тому, что будет передаваться в конструкторе
+
         httpServer = HttpServer.create();
         httpServer.bind(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", new TaskHandler());
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         HttpTaskServer server = new HttpTaskServer();
         server.start();
     }
@@ -119,39 +113,39 @@ public class HttpTaskServer {                      // слушать порт 80
                     case GET_TASKS:
                         // сообщить о начале работы над запросом
                         System.out.println("Началась обработка запроса на получение списка всех задач");
-                        response = gson.toJson(fileManager.getListAllTasks());    // тело ответа
+                        response = gson.toJson(httpManager.getListAllTasks());    // тело ответа
                         break;
                     case GET_TASK:
                         System.out.println("Началась обработка запроса на получение Task по Id");
-                        response = gson.toJson(fileManager.getTaskById(id));
+                        response = gson.toJson(httpManager.getTaskById(id));
                         break;
                     case GET_SUBTASK:
                         System.out.println("Началась обработка запроса на получение Subtask по Id");
-                        response = gson.toJson(fileManager.getSubTaskById(id));
+                        response = gson.toJson(httpManager.getSubTaskById(id));
                         break;
                     case GET_EPIC:
                         System.out.println("Началась обработка запроса на получение Epic по Id");
-                        response = gson.toJson(fileManager.getEpicById(id));
+                        response = gson.toJson(httpManager.getEpicById(id));
                         break;
                     case GET_EPICS:
                         System.out.println("Началась обработка запроса на получение списка всех Epic");
-                        response = gson.toJson(fileManager.getListAllEpics());
+                        response = gson.toJson(httpManager.getListAllEpics());
                         break;
                     case GET_SUBTASKS:
                         System.out.println("Началась обработка запроса на получение списка всех Subtask");
-                        response = gson.toJson(fileManager.getListAllSubtasks());
+                        response = gson.toJson(httpManager.getListAllSubtasks());
                         break;
                     case GET_EPIC_SUBTASK:
                         System.out.println("Началась обработка запроса на получение всех подзадач по Id Эпика");
-                        response = gson.toJson(fileManager.getListSubtasksOfEpic(fileManager.getEpicById(id)));
+                        response = gson.toJson(httpManager.getListSubtasksOfEpic(httpManager.getEpicById(id)));
                         break;
                     case GET_HISTORY:
                         System.out.println("Началась обработка запроса на получение истории");
-                        response = gson.toJson(fileManager.getHistory());
+                        response = gson.toJson(httpManager.getHistory());
                         break;
                     case GET_PRIORITIZED:
                         System.out.println("Началась обработка запроса на получение списка приоритезированных задач");
-                        response = gson.toJson(fileManager.getPrioritizedTasks());
+                        response = gson.toJson(httpManager.getPrioritizedTasks());
                         break;
 
                     case POST_TASK:
@@ -160,15 +154,15 @@ public class HttpTaskServer {                      // слушать порт 80
                         if (exchange.getRequestURI().getQuery() == null) {         // создание новой задачи
                             if (bodyForNewOrUpdate != null) {
                                 Task newTask = gson.fromJson(bodyForNewOrUpdate, Task.class); // получаем Task в виде строки
-                                fileManager.makeNewTask(newTask);
-                                response = "Новый Task " + fileManager.getTaskById(newTask.getId()).toString()
+                                httpManager.makeNewTask(newTask);
+                                response = "Новый Task " + httpManager.getTaskById(newTask.getId()).toString()
                                         + " создан!";
                             }
                         } else {                                                     // обновление задачи по id
                             if (bodyForNewOrUpdate != null) {
                                 Task updateTask = gson.fromJson(bodyForNewOrUpdate, Task.class);
-                                fileManager.updateTask(id, updateTask);
-                                response = "Task " +  fileManager.getTaskById(id).toString()
+                                httpManager.updateTask(id, updateTask);
+                                response = "Task " +  httpManager.getTaskById(id).toString()
                                         + " обновлён!";
                             }
                         }
@@ -179,15 +173,15 @@ public class HttpTaskServer {                      // слушать порт 80
                         if (exchange.getRequestURI().getQuery() == null) {         // создание новой задачи
                             if (bodyForNewOrUpdateSub != null) {
                                 Subtask newSubtask = gson.fromJson(bodyForNewOrUpdateSub, Subtask.class); // получаем Task в виде строки
-                                fileManager.makeNewSubtask(newSubtask);
-                                response = "Новый Subtask " + fileManager.getSubTaskById(newSubtask.getId()).toString()
+                                httpManager.makeNewSubtask(newSubtask);
+                                response = "Новый Subtask " + httpManager.getSubTaskById(newSubtask.getId()).toString()
                                         + " создан!";
                             }
                         } else {                                                     // обновление задачи по id
                             if (bodyForNewOrUpdateSub != null) {
                                 Subtask updateSubtask = gson.fromJson(bodyForNewOrUpdateSub, Subtask.class);
-                                fileManager.updateTask(id, updateSubtask);
-                                response = "Subtask " +  fileManager.getSubTaskById(id).toString()
+                                httpManager.updateTask(id, updateSubtask);
+                                response = "Subtask " +  httpManager.getSubTaskById(id).toString()
                                         + " обновлён!";
                             }
                         }
@@ -198,15 +192,15 @@ public class HttpTaskServer {                      // слушать порт 80
                         if (exchange.getRequestURI().getQuery() == null) {         // создание новой задачи
                             if (bodyForNewOrUpdateEpic != null) {
                                 Epic newEpic = gson.fromJson(bodyForNewOrUpdateEpic, Epic.class); // получаем Task в виде строки
-                                fileManager.makeNewEpic(newEpic);
-                                response = "Новый Epic " + fileManager.getEpicById(newEpic.getId()).toString()
+                                httpManager.makeNewEpic(newEpic);
+                                response = "Новый Epic " + httpManager.getEpicById(newEpic.getId()).toString()
                                         + " создан!";
                             }
                         } else {
                             if (bodyForNewOrUpdateEpic != null) {
                                 Epic updateEpic = gson.fromJson(bodyForNewOrUpdateEpic, Epic.class);
-                                fileManager.updateEpic(id, updateEpic);
-                                response = "Epic " + fileManager.getEpicById(id).toString()
+                                httpManager.updateEpic(id, updateEpic);
+                                response = "Epic " + httpManager.getEpicById(id).toString()
                                         + " обновлён!";
                             }
                         }
@@ -214,25 +208,25 @@ public class HttpTaskServer {                      // слушать порт 80
 
                     case DELETE_All:
                         System.out.println("Началась обработка запроса на удаление всех задач");
-                        fileManager.dellThemAll();
+                        httpManager.dellThemAll();
                         break;
                     case DELETE_TASK:
                     case DELETE_SUBTASK:
                     case DELETE_EPIC:
                         System.out.println("Началась обработка запроса на удаление объекта по Id");
-                         fileManager.dellTaskById(id);
+                         httpManager.dellTaskById(id);
                         break;
                     case DELETE_TASKS:
                         System.out.println("Началась обработка запроса на удаление всех задач Task");
-                        fileManager.dellAllTasks();
+                        httpManager.dellAllTasks();
                         break;
                     case DELETE_SUBTASKS:
                         System.out.println("Началась обработка запроса на удаление всех задач Subtask");
-                        fileManager.dellAllSubtasks();
+                        httpManager.dellAllSubtasks();
                         break;
                     case DELETE_EPICS:
                         System.out.println("Началась обработка запроса на удаление всех задач Epic");
-                        fileManager.dellAllEpic();
+                        httpManager.dellAllEpic();
                         break;
                     case ERROR:
                         System.out.println("Получен некорректный запрос метода: " + method);
