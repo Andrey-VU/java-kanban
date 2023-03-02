@@ -1,10 +1,11 @@
 package ru.yandex.tests;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import org.junit.jupiter.api.*;
 import ru.yandex.http.HttpTaskServer;
+import ru.yandex.tasks.Epic;
 import ru.yandex.tasks.Status;
 import ru.yandex.tasks.Task;
+import ru.yandex.tasks.Type;
 import ru.yandex.tmanager.FileBackedTasksManager;
 import ru.yandex.tmanager.Managers;
 import ru.yandex.tmanager.TaskManager;
@@ -29,7 +30,7 @@ public class HttpTaskServerTest {
 
     @BeforeEach
     public void beforeEach() throws IOException {
-        httpTaskServer.start();
+        //httpTaskServer.start();
         gson = Managers.getGson();
         fileManager = FileBackedTasksManager.loadFromFile("storageTestIn.csv",
                 "firstTestHttpOut.csv");
@@ -47,6 +48,17 @@ public class HttpTaskServerTest {
         String taskSerialized = gson.toJson(fileManager.getTaskById(taskForJson.getId()));
         Task taskFromJson = gson.fromJson(taskSerialized,Task.class);
         Assertions.assertEquals(taskSerialized, gson.toJson(taskFromJson),
+                "трансформация в json или обратно не работает");
+    }
+
+    @Test
+    public void shouldMakeJsonFromEpicAndThenMakeEpicFromIt () throws IOException {
+        Epic epicForJson = new Epic("Epic to Json",
+                "Make newEpic and make Json From It",0, Status.NEW);
+        fileManager.makeNewEpic(epicForJson);
+        String epicSerialized = gson.toJson(fileManager.getTaskById(epicForJson.getId()));
+        Epic epicFromJson = gson.fromJson(epicSerialized,Epic.class);
+        Assertions.assertEquals(epicSerialized, gson.toJson(epicFromJson),
                 "трансформация в json или обратно не работает");
     }
 
@@ -69,8 +81,9 @@ public class HttpTaskServerTest {
     public void shouldMakeNewTask() throws IOException, InterruptedException {
         Task testTaskHttpNew = new Task("newForHTTP","ServerMade", 0, Status.NEW,
                 "01.01.1917--06:00", 3600);
-        fileManager.makeNewTask(testTaskHttpNew);
-        Task testTaskBeforeSending = fileManager.getTaskById(testTaskHttpNew.getId());
+        TaskManager fileManager2 = new FileBackedTasksManager();
+        fileManager2.makeNewTask(testTaskHttpNew);
+        Task testTaskBeforeSending = fileManager2.getTaskById(testTaskHttpNew.getId());
 
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
         final HttpRequest.BodyPublisher bodyNewTask =
@@ -88,24 +101,13 @@ public class HttpTaskServerTest {
                 "Новая задача Task не создана, либо не доставлена обратно клиенту" );
     }
 
-//    @Test
-//    public void shouldUpdateTask() {
-//        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
-//        final HttpRequest.BodyPublisher bodyUpdate = HttpRequest.BodyPublishers.ofString("1");
-//        HttpRequest requestUpdate = HttpRequest.newBuilder().uri(urlWithId).POST(bodyUpdate).build();
-//    }
-
     @Test
     public void shouldGetResponseBodyFromServer() throws IOException, InterruptedException {
-
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
         HttpRequest request2 = requestBuilder.GET().uri(urlWithoutId).build();
         HttpClient client = HttpClient.newHttpClient();
-
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         HttpResponse<String> response = client.send(request2, handler);
-
-        System.out.println("Вот какое тело нам вернули по запросу списка всех Tasks: " + response.body());
         Assertions.assertEquals(!response.body().isEmpty(), true, "тело не доставлено" );
     }
 
@@ -220,3 +222,11 @@ public class HttpTaskServerTest {
 //        System.out.println("path1" + " " + path1[0] + " " + path1[1] + " " + path1[2] + " " + path1.length + "\n"
 //                + "path2" + " " + path2[0] + " " + path2[1] + " " + path2[2] + " " + path2[3] + " " + path2.length );
 
+
+
+//    @Test
+//    public void shouldUpdateTask() {
+//        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
+//        final HttpRequest.BodyPublisher bodyUpdate = HttpRequest.BodyPublishers.ofString("1");
+//        HttpRequest requestUpdate = HttpRequest.newBuilder().uri(urlWithId).POST(bodyUpdate).build();
+//    }

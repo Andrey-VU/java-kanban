@@ -12,7 +12,7 @@ import java.net.http.HttpResponse;
 public class KVTaskClient {
     private String url;
     private String apiToken;                                         // токен из KVServer'а
-    private HttpClient client;                                       // екземпляр для отправки запросов на серв
+    private HttpClient client;                                       // экземпляр для отправки запросов на серв
     HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
 
     public KVTaskClient(String url) {    // "http://localhost:8078/     приходит из менеджера
@@ -80,9 +80,9 @@ public class KVTaskClient {
             if (response.statusCode() == 200) {
                 // пробуем вытащить jsonElement
                 JsonElement jsonElement = JsonParser.parseString(response.body());  // узнать в каком виде попадает в мапу
-                //JsonObject jObj = jsonElement.getAsJsonObject();
+                JsonObject jObj = jsonElement.getAsJsonObject();
 
-            return jsonElement.toString();  //jObj.getAsString();
+            return jObj.getAsString();
             }
         } catch (IOException | InterruptedException e) { // обрабатываем ошибки отправки запроса
             System.out.println("Во время выполнения запроса ресурса по URL-адресу: '" + requestLoad.uri()
@@ -92,5 +92,5 @@ public class KVTaskClient {
     }
 }
 
-
+// return jsonElement.toString();
 
