@@ -123,6 +123,7 @@ public class HttpTaskManagerTest extends TaskManagerTest {
         Epic epicForTest = new Epic("Epic for server",
                 "Make newEpic and push It to server", 0, Status.NEW);
         manager.makeNewEpic(epicForTest);
+        inMemoryManager = Managers.getInMemoryTaskManager();
         inMemoryManager.makeNewEpic(epicForTest);
         Epic epicFromServer = manager.getEpicById(epicForTest.getId());
         Epic epicFromMemory = inMemoryManager.getEpicById(epicForTest.getId());
