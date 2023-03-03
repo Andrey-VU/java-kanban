@@ -9,16 +9,14 @@ import java.util.Map;
 public class Epic extends Task {
 
     private ArrayList<Subtask> mySubtasks = new ArrayList<>();
-    private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private Duration duration;
-
+    
     public Epic(String nameOfTask, String descriptionOfTask, Integer id, Status status) {
         super(nameOfTask, descriptionOfTask, id, status);
         type = Type.EPIC;
         endTime = latestSubtaskEndTime();
-        this.startTime = earliestSubtaskStartTime();
-        this.duration = totalOfSubDuration();
+        startTime = earliestSubtaskStartTime();
+        duration = totalOfSubDuration();
     }
 
     public Epic(Type type, String[] fromArrayEpic) {
