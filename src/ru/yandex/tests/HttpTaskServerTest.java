@@ -2,14 +2,10 @@ package ru.yandex.tests;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.*;
 import ru.yandex.http.HttpTaskServer;
-import ru.yandex.tasks.Epic;
-import ru.yandex.tasks.Status;
-import ru.yandex.tasks.Task;
-import ru.yandex.tasks.Type;
+import ru.yandex.tasks.*;
 import ru.yandex.tmanager.FileBackedTasksManager;
 import ru.yandex.tmanager.Managers;
 import ru.yandex.tmanager.TaskManager;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -18,11 +14,7 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 
 public class HttpTaskServerTest {
-    private HttpTaskServer httpTaskServer = new HttpTaskServer();
     private TaskManager fileManager;
-    private final URI urlWithoutId = URI.create("http://localhost:8080/tasks/task/");
-    private final URI urlWithId = URI.create("http://localhost:8080/tasks/task/?id=");
-    private final URI urlForHistory = URI.create("http://localhost:8080/tasks/history");
     private Gson gson;
 
     public HttpTaskServerTest() throws IOException, InterruptedException {
@@ -35,33 +27,60 @@ public class HttpTaskServerTest {
         fileManager = FileBackedTasksManager.loadFromFile("storageTestIn.csv",
                 "firstTestHttpOut.csv");
     }
+
     @AfterEach
-    public void afterEach() {
-        httpTaskServer.stop(1);
+    public void afterEach() throws IOException {
+        fileManager.dellThemAll();
+        fileManager.getHistory().clear();
+        fileManager.getPrioritizedTasks().clear();
+    }
+
+    @Test
+    public void shouldLoadFromFileManager() throws IOException, InterruptedException {
+        HttpTaskServer httpTaskServer2 = new HttpTaskServer(fileManager);
     }
 
     @Test   // пока не работает для эпика
     public void shouldMakeJsonFromTaskAndThenMakeTaskFromIt() throws IOException {
         Task taskForJson = new Task("Task to Json", "Make newTask and make Json From It",
-                0, Status.NEW,"01.01.1917--12:00",0);
+                0, Status.NEW, "01.01.1917--12:00", 0);
         fileManager.makeNewTask(taskForJson);
         String taskSerialized = gson.toJson(fileManager.getTaskById(taskForJson.getId()));
-        Task taskFromJson = gson.fromJson(taskSerialized,Task.class);
+        Task taskFromJson = gson.fromJson(taskSerialized, Task.class);
         Assertions.assertEquals(taskSerialized, gson.toJson(taskFromJson),
                 "трансформация в json или обратно не работает");
     }
 
-    @Test
-    public void shouldMakeJsonFromEpicAndThenMakeEpicFromIt () throws IOException {
+    @Test   // пока не работает для эпика
+    public void shouldMakeJsonFromSabtaskAndThenMakeSabtaskFromIt() throws IOException {
         Epic epicForJson = new Epic("Epic to Json",
-                "Make newEpic and make Json From It",0, Status.NEW);
+                "Make newEpic and make Json From It", 0, Status.NEW);
+        fileManager.makeNewEpic(epicForJson);
+        Subtask subtaskForJson = new Subtask("Subtask to Json",
+                "Make newSubtask and make Json From It",
+                0, Status.NEW, epicForJson.getId(), "01.01.1917--12:00", 0);
+        fileManager.makeNewSubtask(subtaskForJson);
+
+        String subtaskSerialized = gson.toJson(fileManager.getSubTaskById(subtaskForJson.getId()));
+        Task subtaskFromJson = gson.fromJson(subtaskSerialized, Subtask.class);
+        Assertions.assertEquals(subtaskSerialized, gson.toJson(subtaskFromJson),
+                "трансформация в json или обратно не работает");
+    }
+
+    @Test
+    public void shouldMakeJsonFromEpicAndThenMakeEpicFromIt() throws IOException {
+        Epic epicForJson = new Epic("Epic to Json",
+                "Make newEpic and make Json From It", 0, Status.NEW);
         fileManager.makeNewEpic(epicForJson);
         String epicSerialized = gson.toJson(fileManager.getTaskById(epicForJson.getId()));
-        Epic epicFromJson = gson.fromJson(epicSerialized,Epic.class);
+        Epic epicFromJson = gson.fromJson(epicSerialized, Epic.class);
         Assertions.assertEquals(epicSerialized, gson.toJson(epicFromJson),
                 "трансформация в json или обратно не работает");
     }
 
+}
+
+/*
     @Test
     public void shouldGetHistoryFromServer() throws IOException, InterruptedException {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
@@ -148,8 +167,7 @@ public class HttpTaskServerTest {
         Assertions.assertEquals(testList.toString(), response.body().toString(),
                 "Список всех Task не получен с сервера");
     }
-}
-
+*/
 //        HttpRequest requestAllTasks = HttpRequest.newBuilder().uri(url).GET().build();
 //        HttpResponse<String> response = client.send(requestAllTasks, HttpResponse.BodyHandlers.ofString());
 

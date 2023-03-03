@@ -85,4 +85,5 @@ public class Epic extends Task {
     public Duration getDuration() {
         return duration;
     }
+
 }

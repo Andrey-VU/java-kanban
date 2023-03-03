@@ -1,6 +1,7 @@
 package ru.yandex.tmanager;
 import ru.yandex.exceptions.IntersectionException;
 import ru.yandex.exceptions.ManagerSaveException;
+import ru.yandex.http.KVTaskClient;
 import ru.yandex.tasks.Epic;
 import ru.yandex.tasks.Subtask;
 import ru.yandex.tasks.Task;
@@ -51,4 +52,7 @@ public interface TaskManager {
 
     void printHistory();
 
+    void setKey(String artem2);
+
+    KVTaskClient getKvTaskClient();
 }

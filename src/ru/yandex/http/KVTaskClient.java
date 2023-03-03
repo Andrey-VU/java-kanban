@@ -14,6 +14,7 @@ public class KVTaskClient {
     private String apiToken;                                         // токен из KVServer'а
     private HttpClient client;                                       // экземпляр для отправки запросов на серв
     HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
+    int codeForTestFunctionSaveToKVServer;
 
     public KVTaskClient(String url) {    // "http://localhost:8078/     приходит из менеджера
         this.url = url;
@@ -50,8 +51,9 @@ public class KVTaskClient {
         try {
             HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
             HttpResponse<String> response = client.send(requestPut, handler);
+            setCodeForTestFunctionSaveToKVServer(response.statusCode());
             if (response.statusCode() == 200) {
-                System.out.println("Всё хорошо :)");
+                System.out.println("Всё хорошо :) Информация сохранена на сервере");
             } else {
                 System.out.println("Сервер не дал ответ. Вернулся код: " + response.statusCode());
             }
@@ -80,15 +82,23 @@ public class KVTaskClient {
             if (response.statusCode() == 200) {
                 // пробуем вытащить jsonElement
                 JsonElement jsonElement = JsonParser.parseString(response.body());  // узнать в каком виде попадает в мапу
-                JsonObject jObj = jsonElement.getAsJsonObject();
+               // JsonObject jObj = jsonElement.getAsJsonObject();
 
-            return jObj.getAsString();
+            return jsonElement.toString();             // jObj.getAsString();
             }
         } catch (IOException | InterruptedException e) { // обрабатываем ошибки отправки запроса
             System.out.println("Во время выполнения запроса ресурса по URL-адресу: '" + requestLoad.uri()
                     + "', возникла ошибка.\n" + "Проверьте, пожалуйста, адрес и повторите попытку.");
         }
         return null;
+    }
+
+    public void setCodeForTestFunctionSaveToKVServer(int codeForTestFunctionSaveToKVServer) {
+        this.codeForTestFunctionSaveToKVServer = codeForTestFunctionSaveToKVServer;
+    }
+
+    public int getCodeForTestFunctionSaveToKVServer() {
+        return codeForTestFunctionSaveToKVServer;
     }
 }
 

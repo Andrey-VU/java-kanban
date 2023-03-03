@@ -31,15 +31,23 @@ public class HttpTaskServer {                      // слушать порт 80
     private HttpServer httpServer;
     private Gson gson;
 
-        public HttpTaskServer() throws IOException, InterruptedException {    // сюда может приходить пользовательский,
-                                                // менеджер со своими данными
+    public HttpTaskServer() throws IOException, InterruptedException {
         gson = Managers.getGson();
         httpManager = Managers.getDefault();   // этот менеджер будет равен тому, что будет передаваться в конструкторе
-
         httpServer = HttpServer.create();
         httpServer.bind(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", new TaskHandler());
     }
+
+    public HttpTaskServer(TaskManager fileManager) throws IOException, InterruptedException {    // сюда может приходить пользовательский,
+                                                            // менеджер со своими данными
+        gson = Managers.getGson();
+        httpManager = Managers.getDefault();   // этот менеджер будет равен тому, что будет передаваться в конструкторе
+        httpServer = HttpServer.create();
+        httpServer.bind(new InetSocketAddress(PORT), 0);
+        httpServer.createContext("/tasks", new TaskHandler());
+    }
+
 
     public static void main(String[] args) throws IOException, InterruptedException {
         HttpTaskServer server = new HttpTaskServer();

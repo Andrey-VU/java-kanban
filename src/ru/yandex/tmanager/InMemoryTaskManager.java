@@ -1,6 +1,7 @@
 package ru.yandex.tmanager;
 import ru.yandex.exceptions.IntersectionException;
 import ru.yandex.exceptions.ManagerSaveException;
+import ru.yandex.http.KVTaskClient;
 import ru.yandex.tasks.*;
 
 import java.io.IOException;
@@ -312,6 +313,16 @@ public class InMemoryTaskManager implements TaskManager  {
             System.out.println(task);
         }
     }
+
+    @Override
+    public void setKey(String artem2) {
+    }
+
+    @Override
+    public KVTaskClient getKvTaskClient() {
+        return null;
+    }
+
     @Override
     public ArrayList<Task> getListAllTasks() {                      //Получение списка всех задач всех типов
         ArrayList tasksList = new ArrayList<Task>();
