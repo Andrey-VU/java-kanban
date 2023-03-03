@@ -25,7 +25,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
 
     @Override
     public void save() throws ManagerSaveException {
-        kvTaskClient.put(key, gson.toJson("this"));
+        kvTaskClient.put(key, gson.toJson(this));
     }
 
     public String getKey() {

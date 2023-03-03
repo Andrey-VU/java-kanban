@@ -1,8 +1,5 @@
 package ru.yandex.tests;
-
-import com.sun.tools.javac.Main;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.http.KVServer;
@@ -90,10 +87,8 @@ public class HttpTaskManagerTest extends TaskManagerTest {
                 "Make newEpic for test", 0, Status.NEW);
         inMemoryManager = Managers.getInMemoryTaskManager();
         inMemoryManager.makeNewEpic(epicForTest);
+        manager.makeNewEpic(epicForTest);
 
-        Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
-                "01.01.2000--12:00", 3600);
-        manager.makeNewTask(taskTest);
         Subtask subtaskForServer = new Subtask("Subtask to Json", "Make newSubtask and push " +
                 "It to server",
                 0, Status.NEW, epicForTest.getId(), "01.01.1917--12:00", 0);

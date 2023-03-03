@@ -82,9 +82,9 @@ public class KVTaskClient {
             if (response.statusCode() == 200) {
                 // пробуем вытащить jsonElement
                 JsonElement jsonElement = JsonParser.parseString(response.body());  // узнать в каком виде попадает в мапу
-               // JsonObject jObj = jsonElement.getAsJsonObject();
+                // JsonObject jObj = jsonElement.getAsJsonObject();
 
-            return jsonElement.toString();             // jObj.getAsString();
+            return jsonElement.toString();   //  jObj.getAsString();
             }
         } catch (IOException | InterruptedException e) { // обрабатываем ошибки отправки запроса
             System.out.println("Во время выполнения запроса ресурса по URL-адресу: '" + requestLoad.uri()
