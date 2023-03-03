@@ -14,15 +14,16 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 
 public class HttpTaskServerTest {
+    HttpTaskServer httpTaskServer;
     private TaskManager fileManager;
     private Gson gson;
-
-    public HttpTaskServerTest() throws IOException, InterruptedException {
-    }
+    private final URI urlWithoutId = URI.create("http://localhost:8080/tasks/task/");// GET, DELETE всех задач + new POST
+    private final URI urlWithId = URI.create("http://localhost:8080/tasks/task/?id="); // GET, DELETE, POST по id
 
     @BeforeEach
-    public void beforeEach() throws IOException {
-        //httpTaskServer.start();
+    public void beforeEach() throws IOException, InterruptedException {
+        httpTaskServer = new HttpTaskServer();
+        httpTaskServer.start();
         gson = Managers.getGson();
         fileManager = FileBackedTasksManager.loadFromFile("storageTestIn.csv",
                 "firstTestHttpOut.csv");
@@ -33,14 +34,10 @@ public class HttpTaskServerTest {
         fileManager.dellThemAll();
         fileManager.getHistory().clear();
         fileManager.getPrioritizedTasks().clear();
+        httpTaskServer.stop(0);
     }
 
     @Test
-    public void shouldLoadFromFileManager() throws IOException, InterruptedException {
-        HttpTaskServer httpTaskServer2 = new HttpTaskServer(fileManager);
-    }
-
-    @Test   // пока не работает для эпика
     public void shouldMakeJsonFromTaskAndThenMakeTaskFromIt() throws IOException {
         Task taskForJson = new Task("Task to Json", "Make newTask and make Json From It",
                 0, Status.NEW, "01.01.1917--12:00", 0);
@@ -78,22 +75,19 @@ public class HttpTaskServerTest {
                 "трансформация в json или обратно не работает");
     }
 
-}
-
-/*
     @Test
     public void shouldGetHistoryFromServer() throws IOException, InterruptedException {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
-        HttpRequest requestHistory = requestBuilder.uri(urlForHistory).GET().build();
+        HttpRequest requestHistory = requestBuilder.uri(urlWithoutId).GET().build();
 
 // обеспечиваем принятие ответа
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         HttpResponse<String> response = client.send(requestHistory, handler);
 
-        System.out.println("Вот какое тело нам вернули по запросу создания History: " + response.body());
-        Assertions.assertEquals("Новый Task создан!",  response.body(),
-                "Новая задача Task не создана, либо не доставлена обратно клиенту" );
+        String expectedResponse = gson.toJson(fileManager.getHistory());
+        Assertions.assertEquals(expectedResponse,  response.body(),
+                "История не возвращается с сервера" );
     }
 
     @Test
@@ -121,7 +115,7 @@ public class HttpTaskServerTest {
     }
 
     @Test
-    public void shouldGetResponseBodyFromServer() throws IOException, InterruptedException {
+    public void shouldGetResponseNotEmptyBodyFromServer() throws IOException, InterruptedException {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
         HttpRequest request2 = requestBuilder.GET().uri(urlWithoutId).build();
         HttpClient client = HttpClient.newHttpClient();
@@ -167,84 +161,4 @@ public class HttpTaskServerTest {
         Assertions.assertEquals(testList.toString(), response.body().toString(),
                 "Список всех Task не получен с сервера");
     }
-*/
-//        HttpRequest requestAllTasks = HttpRequest.newBuilder().uri(url).GET().build();
-//        HttpResponse<String> response = client.send(requestAllTasks, HttpResponse.BodyHandlers.ofString());
-
-
-//    HttpRequest requestAllTasks = HttpRequest.newBuilder().uri(urlForTasks).GET().build();
-//
-//    HttpResponse<String> response = client.send(requestAllTasks, HttpResponse.BodyHandlers.ofString());
-//
-//    // 1. Получить все задачи Task
-//    HttpRequest requestAllTasks = HttpRequest.newBuilder().uri(urlForTasks).GET().build();
-//    HttpResponse<String> response = client.send(requestAllTasks, HttpResponse.BodyHandlers.ofString());
-//
-//    // 2. Удаление всех Task
-//    HttpRequest requestDelAllTasks = HttpRequest.newBuilder().uri(urlForTasks).DELETE().build();
-//    HttpResponse<String> responseDelAllTasks = client.send(requestDelAllTasks, HttpResponse.BodyHandlers.ofString());
-//
-//    // 3. Получение одной Task
-//    HttpRequest requestGetTaskById = HttpRequest.newBuilder().uri(urlForOneTask).GET().build();
-//    HttpResponse<String> responseGetTaskById = client.send(requestGetTaskById, HttpResponse.BodyHandlers.ofString());
-//
-//    // 4. Удаление одной Task
-//    HttpRequest requestDelTaskById = HttpRequest.newBuilder().uri(urlForOneTask).DELETE().build();
-//    HttpResponse<String> responseDelTaskById = client.send(requestDelTaskById, HttpResponse.BodyHandlers.ofString());
-//
-//    // 5. обновление одной Task
-//    final HttpRequest.BodyPublisher bodyUpdate = HttpRequest.BodyPublishers.ofString("json на HttpSервер");
-//    HttpRequest requestUpdateTaskById = HttpRequest.newBuilder().uri(urlForOneTask).POST(bodyUpdate).build();
-//    HttpResponse<String> responseUpdateTaskById = client.send(requestUpdateTaskById, HttpResponse.BodyHandlers.ofString());
-//
-//    // 6. создание одной новой Task
-//    final HttpRequest.BodyPublisher bodyNew = HttpRequest.BodyPublishers.ofString("json на HttpSервер");
-//    HttpRequest requestPostTaskById = HttpRequest.newBuilder().uri(urlForTasks).POST(bodyNew).build();
-//
-//
-//    HttpResponse<String> response = client.send(requestAllTasks, HttpResponse.BodyHandlers.ofString());
-
-
-
-//    private final URI urlForTasks = URI.create("http://localhost:8080/tasks/task/");// GET, DELETE всех задач + new POST
-//    private final URI urlForOneTask = URI.create("http://localhost:8080/tasks/task/?id="); // GET, DELETE, POST по id
-
-
-
-//        TaskManager fileManager = Managers.getFileBackedManager();
-//        TaskManager inMemoryManager = Managers.getDefault();
-//
-//        Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
-//                "01.01.2000--12:00", 3600);
-//        inMemoryManager.makeNewTask(taskTest);
-//        Epic epicTest = new Epic("Epic name", "Epic description", 0, Status.NEW);
-//        inMemoryManager.makeNewEpic(epicTest);
-//        Subtask subtaskTest = new Subtask("Subtask name", "Subtask description",
-//                0, Status.NEW, epicTest.getId(), "01.05.2000--12:00", 3600);
-//        inMemoryManager.makeNewSubtask(subtaskTest);
-//
-//
-//        String taskSerialized = httpTaskServer.taskToJson(taskTest);
-//        Task taskFromJson = httpTaskServer.jsonToTask(taskSerialized);
-//        if (taskFromJson.equals(taskSerialized)) {
-//            System.out.println("Десериализовано успешно");
-//        } else System.out.println("Десериализация не прошла");
-//        String taskSerialized2 = httpTaskServer.taskToJson(taskTest);
-//
-//        String tmpRequestPath1 = "/tasks/task/";
-//        String tmpRequestPath2 = "/tasks/task/?id=";
-//
-//        String[] path1 = tmpRequestPath1.split("/");
-//        String[] path2 = tmpRequestPath2.split("/");
-//
-//        System.out.println("path1" + " " + path1[0] + " " + path1[1] + " " + path1[2] + " " + path1.length + "\n"
-//                + "path2" + " " + path2[0] + " " + path2[1] + " " + path2[2] + " " + path2[3] + " " + path2.length );
-
-
-
-//    @Test
-//    public void shouldUpdateTask() {
-//        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
-//        final HttpRequest.BodyPublisher bodyUpdate = HttpRequest.BodyPublishers.ofString("1");
-//        HttpRequest requestUpdate = HttpRequest.newBuilder().uri(urlWithId).POST(bodyUpdate).build();
-//    }
+}
