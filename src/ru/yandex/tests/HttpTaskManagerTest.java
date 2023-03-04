@@ -7,6 +7,7 @@ import ru.yandex.tasks.Epic;
 import ru.yandex.tasks.Status;
 import ru.yandex.tasks.Subtask;
 import ru.yandex.tasks.Task;
+import ru.yandex.tmanager.HttpTaskManager;
 import ru.yandex.tmanager.Managers;
 import ru.yandex.tmanager.TaskManager;
 
@@ -39,6 +40,37 @@ public class HttpTaskManagerTest extends TaskManagerTest {
         manager.getHistory();
         manager.getPrioritizedTasks().clear();
     }
+
+    @Test
+    public void shouldSaveTaskManagerToServerAndThenLoadItFromIts() throws IOException, InterruptedException {
+        Task taskTest = new Task("Test name", "Test description", 0, Status.NEW,
+                "01.01.2000--12:00", 3600);
+        Epic epicForTest = new Epic("Epic for test",
+                "Make newEpic and use It", 0, Status.NEW);
+        manager.makeNewTask(taskTest);
+        manager.makeNewEpic(epicForTest);
+        Subtask subtaskForServer = new Subtask("Subtask to Server",
+                "Make newSubtask and push It to server",
+                0, Status.NEW, epicForTest.getId(), "01.01.1917--12:00", 0);
+        manager.makeNewSubtask(subtaskForServer);
+
+        manager.save();
+        HttpTaskManager loadedFromServer = (HttpTaskManager) manager.loadFromKVServer();
+
+        assertEquals(manager.getListAllTasks(), loadedFromServer.getListAllTasks(),
+                "Task менеджер не вернулся с сервера, или вернулся" +
+                "какой-то не такой");
+        assertEquals(manager.getListAllEpics(), loadedFromServer.getListAllEpics(),
+                "Task менеджер не вернулся с сервера, или вернулся" +
+                        "какой-то не такой");
+        assertEquals(manager.getListAllTasks(), loadedFromServer.getListAllTasks(),
+                "Task менеджер не вернулся с сервера, или вернулся" +
+                        "какой-то не такой");
+        assertEquals(manager.getHistory(), loadedFromServer.getHistory(),
+                "С историей какая-то беда");
+
+    }
+
 
     @Test
     public  void shouldSaveTaskToServer() throws IOException {

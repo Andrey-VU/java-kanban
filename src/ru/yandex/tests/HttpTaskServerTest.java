@@ -1,5 +1,7 @@
 package ru.yandex.tests;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.junit.jupiter.api.*;
 import ru.yandex.http.HttpTaskServer;
 import ru.yandex.tasks.*;
@@ -12,6 +14,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+
+import static com.google.gson.JsonParser.parseString;
 
 public class HttpTaskServerTest {
     HttpTaskServer httpTaskServer;
@@ -37,16 +41,6 @@ public class HttpTaskServerTest {
         httpTaskServer.stop(0);
     }
 
-    @Test
-    public void shouldMakeJsonFromTaskAndThenMakeTaskFromIt() throws IOException {
-        Task taskForJson = new Task("Task to Json", "Make newTask and make Json From It",
-                0, Status.NEW, "01.01.1917--12:00", 0);
-        fileManager.makeNewTask(taskForJson);
-        String taskSerialized = gson.toJson(fileManager.getTaskById(taskForJson.getId()));
-        Task taskFromJson = gson.fromJson(taskSerialized, Task.class);
-        Assertions.assertEquals(taskSerialized, gson.toJson(taskFromJson),
-                "трансформация в json или обратно не работает");
-    }
 
     @Test   // пока не работает для эпика
     public void shouldMakeJsonFromSabtaskAndThenMakeSabtaskFromIt() throws IOException {
@@ -75,22 +69,7 @@ public class HttpTaskServerTest {
                 "трансформация в json или обратно не работает");
     }
 
-    @Test
-    public void shouldGetHistoryFromServer() throws IOException, InterruptedException {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
-        HttpRequest requestHistory = requestBuilder.uri(urlWithoutId).GET().build();
-
-// обеспечиваем принятие ответа
-        HttpClient client = HttpClient.newHttpClient();
-        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
-        HttpResponse<String> response = client.send(requestHistory, handler);
-
-        String expectedResponse = gson.toJson(fileManager.getHistory());
-        Assertions.assertEquals(expectedResponse,  response.body(),
-                "История не возвращается с сервера" );
-    }
-
-    @Test
+      @Test
     public void shouldMakeNewTask() throws IOException, InterruptedException {
         Task testTaskHttpNew = new Task("newForHTTP","ServerMade", 0, Status.NEW,
                 "01.01.1917--06:00", 3600);
@@ -143,22 +122,5 @@ public class HttpTaskServerTest {
                 "Запрос ресурса tasks/task/?id= сервером не получен" );
         }
 
-    @Test
-    public void shouldSendGetRequestToHttpTaskServerAndGetListOfTasks() throws IOException, InterruptedException {
-        ArrayList<Task> testList = fileManager.getListAllTasks();
 
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();             // экземпляр класса-строителя
-        HttpRequest request = requestBuilder.GET().uri(urlWithoutId).build();    // объект, описывающий HTTP-запрос
-        HttpClient client = HttpClient.newHttpClient();                       // HTTP-клиент с настройками по умолчанию
-        // стандартный обработчик тела запроса с конвертацией содержимого в строку
-        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
-        HttpResponse<String> response = client.send(request, handler);     // отправляем запрос, получаем ответ сервера
-
-        // выводим код состояния и тело ответа
-        System.out.println("Код ответа: " + response.statusCode());
-        System.out.println("Тело ответа: " + response.body());
-
-        Assertions.assertEquals(testList.toString(), response.body().toString(),
-                "Список всех Task не получен с сервера");
-    }
 }

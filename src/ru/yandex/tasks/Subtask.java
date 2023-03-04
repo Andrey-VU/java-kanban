@@ -17,8 +17,6 @@ public class Subtask extends Task {
         this.epicId = Integer.parseInt(fromArray[7]);
     }
 
-
-
     public int getEpicID() {
         return epicId;
     }
@@ -27,8 +25,6 @@ public class Subtask extends Task {
 //    public String getDescription() {
 //        return super.getDescription() + "," + epicId;
 //    }
-
-
 
     @Override
     public String getEpicId() {

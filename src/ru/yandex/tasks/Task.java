@@ -12,8 +12,8 @@ public class Task {
     private int id;                        // Уникальный идентификационный номер
     private Status status;                 // Статус прогресса работы над задачей
     protected Type type;                      // Тип задачи
-    LocalDateTime startTime;       // время начала задачи (дата с точностью до дня, часов, минут, секунд)
-    Duration duration;             // прогнозная длительность выполнения (в минутах)
+    protected LocalDateTime startTime;       // время начала задачи (дата с точностью до дня, часов, минут, секунд)
+    protected Duration duration;             // прогнозная длительность выполнения (в минутах)
 
     public Task(String name, String description, Integer id, Status status,
                 String startTime, long minutes) {

@@ -55,4 +55,6 @@ public interface TaskManager {
     void setKey(String artem2);
 
     KVTaskClient getKvTaskClient();
+
+    TaskManager loadFromKVServer() throws IOException, InterruptedException;
 }

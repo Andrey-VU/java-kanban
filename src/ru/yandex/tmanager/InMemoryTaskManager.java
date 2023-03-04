@@ -324,6 +324,11 @@ public class InMemoryTaskManager implements TaskManager  {
     }
 
     @Override
+    public TaskManager loadFromKVServer() throws IOException, InterruptedException {
+        return null;
+    }
+
+    @Override
     public ArrayList<Task> getListAllTasks() {                      //Получение списка всех задач всех типов
         ArrayList tasksList = new ArrayList<Task>();
         if (!taskTasks.isEmpty()) {

@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class Epic extends Task {
 
-    private ArrayList<Subtask> mySubtasks = new ArrayList<>();
+    private transient ArrayList<Subtask> mySubtasks = new ArrayList<>();
     private LocalDateTime endTime;
 
     public Epic(String nameOfTask, String descriptionOfTask, Integer id, Status status) {
